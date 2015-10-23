@@ -7,7 +7,6 @@
 *.userosscache
 *.sln.docstates
 
-windows/nRFUart/ #Just for Reference.
 
 # Build results
 [Dd]ebug/
@@ -231,3 +230,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+# Just for Reference.
+windows/nRFUart/
+
