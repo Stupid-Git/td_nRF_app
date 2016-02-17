@@ -1,18 +1,19 @@
-﻿/* Copyright (c) 2013 Nordic Semiconductor. All Rights Reserved.
- *
- * The information contained herein is property of Nordic Semiconductor ASA.
- * Terms and conditions of usage are described in detail in NORDIC
- * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT. 
- *
- * Licensees are granted free, non-transferable use of the information. NO
- * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
- * the file.
- *
- */
+﻿
 
-/* This application is targeted to work with a peripheral loaded with an nRF UART peripheral
- * application.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ using System.Text;
 using System.IO;
 using Nordicsemi;
 
-namespace nRFUart_TD
+namespace TDnRF
 {
     /// <summary>
     /// Provides data for the OutputReceived event.
@@ -64,8 +65,10 @@ namespace nRFUart_TD
 
         /* Instance variables */
         public MasterEmulator masterEmulator;
-        /*public*/ PipeSetup pipeSetup;
+        /*public*/ //PPP PipeSetup pipeSetup;
         public UpDnEngine udEngine;
+        public CtrlEngine ctrlEngine;
+        
 
         bool connectionInProgress = false;
         bool UARTsendData = false;
@@ -78,7 +81,8 @@ namespace nRFUart_TD
         /// Constructor.
         /// </summary>
         public nRF_TD_Controller()
-        { }
+        {
+        }
 
         /// <summary>
         /// Connect to peer device.
@@ -106,80 +110,8 @@ namespace nRFUart_TD
             }
         }
 
-        /// <summary>
-        /// Send data to peer device.
-        /// </summary>
-        /// <param name="value"></param>
-#if false
-        public void UART_SendData(string value) //S
-        {
-            byte[] encodedBytes = Encoding.UTF8.GetBytes(value);
-
-            if (encodedBytes.Length > maxPacketLength)
-            {
-                Array.Resize<byte>(ref encodedBytes, maxPacketLength);
-                AddToLog("Max packet size is 20 characters, text is truncated.");
-            }
-
-            masterEmulator.SendData(pipeSetup.UartRxPipe, encodedBytes);
-
-            string decodedString = Encoding.UTF8.GetString(encodedBytes);
-            AddToLog(string.Format("TX: {0}", decodedString));
-        }
-
-        void Send_Dcmd(String value)
-        {
-            /*TODO
-            System::Text::Encoding^ enc = gcnew System::Text::UTF8Encoding();
-            array<System::Byte>^ encodedBytes = enc->GetBytes(value);
-            if (encodedBytes->Length > maxPacketLength)
-            {
-                Array::Resize<System::Byte>( encodedBytes, maxPacketLength);
-                AddToLog("Max packet size is 20 characters, text is truncated.");
-            }
-            masterEmulator->SendData(pipeSetup->DcmdPipe, encodedBytes);
-            String^ decodedString = enc->GetString(encodedBytes);
-            AddToLog(String::Format("TX Dcmd: {0}", decodedString));
-            */
-        }
-        void Send_Ddat(String value)
-        {
-            /*TODO 
-            System::Text::Encoding^ enc = gcnew System::Text::UTF8Encoding();
-            array<System::Byte>^ encodedBytes = enc->GetBytes(value);
-            if (encodedBytes->Length > maxPacketLength)
-            {
-                Array::Resize<System::Byte>( encodedBytes, maxPacketLength);
-                AddToLog("Max packet size is 20 characters, text is truncated.");
-            }
-            masterEmulator->SendData(pipeSetup->DdatPipe, encodedBytes);
-            String^ decodedString = enc->GetString(encodedBytes);
-            AddToLog(String::Format("TX Ddat: {0}", decodedString));
-            */
-        }
-
-        void Send_Ucfm(String value)
-        {
-            /*TODO
-            System::Text::Encoding^ enc = gcnew System::Text::UTF8Encoding();
-            array<System::Byte>^ encodedBytes = enc->GetBytes(value);
-            if (encodedBytes->Length > maxPacketLength)
-            {
-                Array::Resize<System::Byte>( encodedBytes, maxPacketLength);
-                AddToLog("Max packet size is 20 characters, text is truncated.");
-            }
-            masterEmulator->SendData(pipeSetup->DdatPipe, encodedBytes);
-            String^ decodedString = enc->GetString(encodedBytes);
-            AddToLog(String::Format("TX Ddat: {0}", decodedString));
-            */
-        }
-#endif //false
 
 
-        public void EnableNotify_Dcfm()
-        {
-            masterEmulator.GetCharacteristicProperties(pipeSetup.DcfmPipe);
-        }
 
 #if false
 
@@ -332,7 +264,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Signal StartSendData task to cancel sending of data.
         /// </summary>
-        public void UARTStopSendData() //NNN  //YYY
+        public void UARTStopSendData()
         {
             UARTsendData = false;
         }
@@ -340,7 +272,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Disconnect from peer device.
         /// </summary>
-        public void InitiateDisconnect() //YYY
+        public void InitiateDisconnect() 
         {
             if (!masterEmulator.IsConnected)
             {
@@ -353,7 +285,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Close MasterEmulator.
         /// </summary>
-        public void Close() //YYY
+        public void Close() 
         {
             if (!masterEmulator.IsOpen)
             {
@@ -369,18 +301,18 @@ namespace nRFUart_TD
         ///  For other threads, the invoke is required.
         /// </summary>
         /// <param name="message">The message string to add to the log.</param>
-        void AddToLog(string message) //YYY
+        void AddToLog(string message) 
         {
             if (LogMessage != null)
             {
                 LogMessage(this, new OutputReceivedEventArgs(message));
             }
 
-            /* Writing to trace also, which causes the message to be put in the log file. */
+            // Writing to trace also, which causes the message to be put in the log file.
             Trace.WriteLine(message);
         }
 
-        void karelLog(string message) //YYY
+        void karelLog(string message) 
         {
             AddToLog(message);
         }
@@ -388,7 +320,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Convenience method for logging exception messages.
         /// </summary>
-        void LogErrorMessage(string errorMessage, string stackTrace) //YYY
+        void LogErrorMessage(string errorMessage, string stackTrace) 
         {
             AddToLog(errorMessage);
             Trace.WriteLine(stackTrace);
@@ -398,7 +330,7 @@ namespace nRFUart_TD
         /// Get the path to the log file of MasterEmulator.
         /// </summary>
         /// <returns>Returns path to log file.</returns>
-        public string GetLogfilePath() //YYY
+        public string GetLogfilePath() 
         {
             return masterEmulator.GetLogFilePath();
 
@@ -408,7 +340,7 @@ namespace nRFUart_TD
         /// Collection of method calls to start and setup MasterEmulator.
         /// The calls are placed in a background task for not blocking the gui thread.
         /// </summary>
-        public void Initialize() //NNN //YYY ??
+        public void Initialize()
         {
             Task.Factory.StartNew(() =>
             {
@@ -419,13 +351,22 @@ namespace nRFUart_TD
                     String device = FindUsbDevice();
                     OpenMasterEmulatorDevice(device);
 
-                    pipeSetup = new PipeSetup(masterEmulator);
-                    pipeSetup.PerformPipeSetup();//pipeSetup.PerformPipeSetup_nRFUart();
+                    //----- PipeSetup -----
+                    //PPP pipeSetup = new PipeSetup(masterEmulator);
+                    //PPP pipeSetup.PerformPipeSetup();//pipeSetup.PerformPipeSetup_nRFUart();
 
                     udEngine = new UpDnEngine();
-                    udEngine.UpDnEngine_Setup(masterEmulator, pipeSetup);
+                    udEngine.UpDnEngine_Setup(masterEmulator);//PPP, pipeSetup);
+                    udEngine.PerformPipeSetup();
 
+                    ctrlEngine = new CtrlEngine();
+                    ctrlEngine.CtrlEngine_Setup(masterEmulator);//PPP, pipeSetup);
+                    ctrlEngine.PerformPipeSetup();
+
+                    //----- Start the MasterEmulator -----
                     Run();
+
+                    //----- Send Out Initialized Event -----
                     Initialized(this, EventArgs.Empty);
                     
                     /*ORIG
@@ -450,7 +391,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Create MasterEmulator instance.
         /// </summary>
-        void InitializeMasterEmulator() //YYY
+        void InitializeMasterEmulator() 
         {
             AddToLog("Loading...");
             masterEmulator = new MasterEmulator();
@@ -459,14 +400,20 @@ namespace nRFUart_TD
         /// <summary>
         /// Register event handlers for MasterEmulator events.
         /// </summary>
-        void RegisterEventHandlers() //YYY
+        void RegisterEventHandlers() 
         {
-            masterEmulator.Connected += OnConnected;
-            masterEmulator.ConnectionUpdateRequest += OnConnectionUpdateRequest;
-            masterEmulator.DataReceived += OnDataReceived;
-            masterEmulator.DeviceDiscovered += OnDeviceDiscovered;
-            masterEmulator.Disconnected += OnDisconnected;
-            masterEmulator.LogMessage += OnLogMessage;
+            masterEmulator.Connected += OnConnected;                             //public event EventHandler<EventArgs> Connected;
+            masterEmulator.ConnectionUpdateRequest += OnConnectionUpdateRequest; //public event EventHandler<ConnectionUpdateRequestEventArgs> ConnectionUpdateRequest;
+            masterEmulator.DataReceived += OnDataReceived;                       //public event EventHandler<PipeDataEventArgs> DataReceived;
+            //public event EventHandler<DataRequestedEventArgs> DataRequested;
+            masterEmulator.DeviceDiscovered += OnDeviceDiscovered;               //public event EventHandler<ValueEventArgs<BtDevice>> DeviceDiscovered;
+            masterEmulator.Disconnected += OnDisconnected;                       //public event EventHandler<ValueEventArgs<DisconnectReason>> Disconnected;
+            //public event EventHandler<ValueEventArgs<int>> DisplayPasskey;
+            masterEmulator.LogMessage += OnLogMessage;                           //public event EventHandler<ValueEventArgs<string>> LogMessage;
+            //public event EventHandler<OobKeyRequestEventArgs> OobKeyRequest;
+            //public event EventHandler<PasskeyRequestEventArgs> PasskeyRequest;
+            //public event EventHandler<PipeErrorEventArgs> PipeError;
+            //public event EventHandler<SecurityRequestEventArgs> SecurityRequest;
         }
 
         /// <summary>
@@ -474,7 +421,7 @@ namespace nRFUart_TD
         /// If more than one is connected it will simply return the first in the list.
         /// </summary>
         /// <returns>Returns the first master emulator device found.</returns>
-        string FindUsbDevice() //YYY
+        string FindUsbDevice() 
         {
             /* The UsbDeviceType argument is used for filtering master emulator device types. */
             var devices = masterEmulator.EnumerateUsb(UsbDeviceType.AnyMasterEmulator);
@@ -493,7 +440,7 @@ namespace nRFUart_TD
         /// Tell the api to use the given master emulator device.
         /// </summary>
         /// <param name="device"></param>
-        void OpenMasterEmulatorDevice(string device) //YYY
+        void OpenMasterEmulatorDevice(string device) 
         {
             if (masterEmulator.IsOpen)
             {
@@ -507,7 +454,7 @@ namespace nRFUart_TD
         /// <summary>
         /// By calling Run, the pipesetup is processed and the stack engine is started.
         /// </summary>
-        void Run() //YYY
+        void Run() 
         {
             if (masterEmulator.IsRunning)
             {
@@ -523,7 +470,7 @@ namespace nRFUart_TD
         /// and scan repsonse packets.
         /// </summary>
         /// <returns></returns>
-        bool StartDeviceDiscovery() //YYY
+        bool StartDeviceDiscovery() 
         {
             if (!masterEmulator.IsRunning)
             {
@@ -543,7 +490,7 @@ namespace nRFUart_TD
             return startSuccess;
         }
 
-        void karelDumpDevice(BtDevice device) //YYY
+        void karelDumpDevice(BtDevice device) 
         {
 
             IDictionary<DeviceInfoType, string> deviceInfo;
@@ -604,14 +551,15 @@ namespace nRFUart_TD
 
         }
 
+
 #if false
         /// <summary>
         /// Connecting to the given device, and with the given connection parameters.
         /// </summary>
         /// <param name="device">Device to connect to.</param>
         /// <returns>Returns success indication.</returns>
-        //bool Connect(BtDevice device) //YYY
-        bool Connect_nRFUart(BtDevice device) //YYY
+        //bool Connect(BtDevice device) 
+        bool Connect_nRFUart(BtDevice device) 
         {
             if (masterEmulator.IsDeviceDiscoveryOngoing)
             {
@@ -649,9 +597,10 @@ namespace nRFUart_TD
 #endif
 
 #if true
-        bool Connect/*_nRFTD1*/(BtDevice device) //YYY
+        bool Connect/*_nRFTD1*/(BtDevice device) 
         {
-            if (masterEmulator.IsDeviceDiscoveryOngoing)
+            //if (masterEmulator.IsDeviceDiscoveryOngoing)
+            while (masterEmulator.IsDeviceDiscoveryOngoing) // TODO (maybe need this during debug run
             {
                 masterEmulator.StopDeviceDiscovery();
             }
@@ -677,7 +626,7 @@ namespace nRFUart_TD
         /// By discovering pipes, the pipe setup we have specified will be matched up
         /// to the remote device's ATT table by ATT service discovery.
         /// </summary>
-        void DiscoverPipes() //NNN
+        void DiscoverPipes()
         {
             bool success = masterEmulator.DiscoverPipes();
 
@@ -691,7 +640,7 @@ namespace nRFUart_TD
         /// Pipes of type PipeType.Receive must be opened before they will start receiving notifications.
         /// This maps to ATT Client Configuration Descriptors.
         /// </summary>
-        void OpenRemotePipes() //NNN
+        void OpenRemotePipes()
         {
             var openedPipesEnumeration = masterEmulator.OpenAllRemotePipes();
             List<int> openedPipes = new List<int>(openedPipesEnumeration);
@@ -701,7 +650,7 @@ namespace nRFUart_TD
         /// Event handler for DeviceDiscovered. This handler will be called when devices
         /// are discovered during asynchronous device discovery.
         /// </summary>
-        void OnDeviceDiscovered(object sender, ValueEventArgs<BtDevice> arguments) //YYY
+        void OnDeviceDiscovered(object sender, ValueEventArgs<BtDevice> arguments) 
         {
             /* Avoid call after a connect procedure is being started,
              * and the discovery procedure hasn't yet been stopped. */
@@ -747,12 +696,12 @@ namespace nRFUart_TD
         /// <summary>
         /// Check if a device has the advertising data we are looking for.
         /// </summary>
-        bool IsEligibleForConnection(BtDevice device) //YYY
+        bool IsEligibleForConnection(BtDevice device) 
         {
             IDictionary<DeviceInfoType, string> deviceInfo = device.DeviceInfo;
 
             karelDumpDevice(device);
-
+            /*
             bool hasServicesCompleteAdField =
                 deviceInfo.ContainsKey(DeviceInfoType.ServicesCompleteListUuid128);
 
@@ -760,12 +709,19 @@ namespace nRFUart_TD
             {
                 return false;
             }
-
-            //#define NUS_BASE_UUID  {{0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E}} /**< Used vendor specific UUID. */
-            //const string bleUartUuid = "6E400001B5A3F393E0A9E50E24DCCA9E";
-            const   string bleUartUuid = "6E400001B5A3F393E0A9E50E24DCCA42"; // ... 42 == T&D
-            bool hasHidServiceUuid = deviceInfo[DeviceInfoType.ServicesCompleteListUuid128].Contains(bleUartUuid);
-
+            */
+            bool hasHidServiceUuid;
+            try
+            {
+                //#define NUS_BASE_UUID  {{0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x00, 0x00, 0x40, 0x6E}} /**< Used vendor specific UUID. */
+                //const string bleUartUuid = "6E400001B5A3F393E0A9E50E24DCCA9E";
+                const string bleUartUuid = "6E400001B5A3F393E0A9E50E24DCCA42"; // ... 42 == T&D
+                hasHidServiceUuid = deviceInfo[DeviceInfoType.ServicesCompleteListUuid128].Contains(bleUartUuid);
+            }
+            catch (Exception ex)
+            {
+                hasHidServiceUuid = false;
+            }
             if (!hasHidServiceUuid)
             {
                 return false;
@@ -775,7 +731,7 @@ namespace nRFUart_TD
             return true;
         }
         /*
-        bool IsEligibleForConnection_nRFTD1(BtDevice device) //YYY
+        bool IsEligibleForConnection_nRFTD1(BtDevice device) 
         {
             IDictionary<DeviceInfoType, string> deviceInfo = device.DeviceInfo;
 
@@ -806,7 +762,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Extract the device name from the advertising data.
         /// </summary>
-        string GetDeviceName(IDictionary<DeviceInfoType, string> deviceInfo) //YYY
+        string GetDeviceName(IDictionary<DeviceInfoType, string> deviceInfo) 
         {
             string deviceName = string.Empty;
             bool hasNameField = deviceInfo.ContainsKey(DeviceInfoType.CompleteLocalName);
@@ -823,9 +779,6 @@ namespace nRFUart_TD
     /// </summary>
     void OnDataReceived(Object sender, Nordicsemi.PipeDataEventArgs arguments)
     {
-
-        //Console::WriteLine("OnDataReceived: hhhjghjghjghjghjghjghjg");
-
         System.Text.StringBuilder stringBuffer = new System.Text.StringBuilder();
         foreach (Byte element in arguments.PipeData)
         {
@@ -833,30 +786,39 @@ namespace nRFUart_TD
         }
         if (DebugMessagesEnabled)
         {
-            //AddToLog(String::Format("Data received on pipe number {0}:{1}", arguments->PipeNumber, stringBuffer->ToString()));
+            AddToLog(String.Format("Data received on pipe number {0}:{1}", arguments.PipeNumber, stringBuffer.ToString()));
         }
 
-        if (arguments.PipeNumber == pipeSetup.WctrlPipe)
-            OnDataReceived_Wctrl( sender, arguments);
-        if (arguments.PipeNumber == pipeSetup.RctrlPipe)
-            OnDataReceived_Rctrl( sender, arguments);
 
-        if (arguments.PipeNumber == pipeSetup.UartTxPipe)
-            OnDataReceived_Uart( sender, arguments);
+        udEngine.OnAnyPipe(sender, arguments);
+        ctrlEngine.OnAnyPipe(sender, arguments);
 
+        //REF if (arguments.PipeNumber == pipeSetup.UartTxPipe)
+        //REF     OnDataReceived_Uart( sender, arguments);
+        /*
+        //===== udEngine =====
         if (arguments.PipeNumber == pipeSetup.DcfmPipe)
-            OnDataReceived_Dn( sender, arguments);
+            udEngine.OnAnyPipe(sender, arguments); // OnDataReceived_Dn( sender, arguments);
+        
         if( arguments.PipeNumber == pipeSetup.UcmdPipe )
-            OnDataReceived_Up( sender, arguments);
+            udEngine.OnAnyPipe(sender, arguments); // OnDataReceived_Up( sender, arguments);
         if( arguments.PipeNumber == pipeSetup.UdatPipe )
-            OnDataReceived_Up( sender, arguments);
+            udEngine.OnAnyPipe(sender, arguments); // OnDataReceived_Up( sender, arguments);
+
+        //===== ctrlEngine =====
+        if (arguments.PipeNumber == pipeSetup.WctrlPipe)
+            ctrlEngine.OnAnyPipe(sender, arguments); // OnDataReceived_Wctrl(sender, arguments);
+        if (arguments.PipeNumber == pipeSetup.RctrlPipe)
+            ctrlEngine.OnAnyPipe(sender, arguments); // OnDataReceived_Rctrl(sender, arguments);
+        */
     }
 
+    //===== udEngine =====
+    /*
     void OnDataReceived_Dn(Object sender, Nordicsemi.PipeDataEventArgs arguments)
     {
         udEngine.On_Dcfm( arguments.PipeData, arguments.PipeData.Length );
     }
-
     void OnDataReceived_Up(Object sender, Nordicsemi.PipeDataEventArgs arguments)
     {
         if( arguments.PipeNumber == pipeSetup.UcmdPipe )
@@ -864,36 +826,28 @@ namespace nRFUart_TD
         if( arguments.PipeNumber == pipeSetup.UdatPipe )
             udEngine.On_Udat( arguments.PipeData, arguments.PipeData.Length );
     }
+    */
 
+    //===== ctrlEngine =====
+    /*
     void OnDataReceived_Wctrl(Object sender, Nordicsemi.PipeDataEventArgs arguments)
     {
-        System.Text.StringBuilder stringBuffer = new System.Text.StringBuilder();
-        foreach (Byte element in arguments.PipeData)
-        {
-            stringBuffer.AppendFormat(" 0x{0:X2}", element);
-        }
-        if (DebugMessagesEnabled)
-        {
-            AddToLog(String.Format("Wctrl: Data received on pipe number {0}:{1}", arguments.PipeNumber,  stringBuffer.ToString()));
-        }
+        if (arguments.PipeNumber == pipeSetup.WctrlPipe)
+            ctrlEngine.On_Wctrl(arguments.PipeData, arguments.PipeData.Length);
     }
     void OnDataReceived_Rctrl(Object sender, Nordicsemi.PipeDataEventArgs arguments)
     {
-        System.Text.StringBuilder stringBuffer = new System.Text.StringBuilder();
-        foreach (Byte element in arguments.PipeData)
-        {
-            stringBuffer.AppendFormat(" 0x{0:X2}", element);
-        }
-        if (DebugMessagesEnabled)
-        {
-            AddToLog(String.Format("Rctrl: Data received on pipe number {0}:{1}", arguments.PipeNumber,  stringBuffer.ToString()));
-        }
+        if (arguments.PipeNumber == pipeSetup.RctrlPipe)
+            //ctrlEngine.On_Rctrl(sender, arguments);
+            ctrlEngine.On_Rctrl(arguments.PipeData, arguments.PipeData.Length);
     }
+    */
 
         /// <summary>
         /// This event handler is called when data has been received on any of our pipes.
         /// </summary>
-        void OnDataReceived_Uart(object sender, PipeDataEventArgs arguments) //NNN
+        /* REF
+        void OnDataReceived_Uart(object sender, PipeDataEventArgs arguments)
         {
             if (arguments.PipeNumber != pipeSetup.UartTxPipe)
             {
@@ -918,11 +872,12 @@ namespace nRFUart_TD
             string convertedText = Encoding.UTF8.GetString(utf8Array);
             AddToLog(string.Format("RX: {0}", convertedText));
         }
+        REF */
 
         /// <summary>
         /// This event handler is called when a connection has been successfully established.
         /// </summary>
-        void OnConnected(object sender, EventArgs arguments) //NNN
+        void OnConnected(object sender, EventArgs arguments)
         {
             if (Connected != null)
             {
@@ -967,7 +922,7 @@ namespace nRFUart_TD
         /// A connection update must be responded to in two steps: sending a connection update
         /// response, and performing the actual update.
         /// </summary>
-        void OnConnectionUpdateRequest(object sender, ConnectionUpdateRequestEventArgs arguments) //NNN
+        void OnConnectionUpdateRequest(object sender, ConnectionUpdateRequestEventArgs arguments)
         {
             Task.Factory.StartNew(() =>
             {
@@ -984,7 +939,7 @@ namespace nRFUart_TD
         /// <summary>
         /// This event handler is called when a connection has been terminated.
         /// </summary>
-        void OnDisconnected(object sender, ValueEventArgs<DisconnectReason> arguments) //NNN
+        void OnDisconnected(object sender, ValueEventArgs<DisconnectReason> arguments)
         {
             connectionInProgress = false;
             UARTsendData = false;
@@ -994,7 +949,7 @@ namespace nRFUart_TD
         /// <summary>
         /// Relay received log message events to the log method.
         /// </summary>
-        void OnLogMessage(object sender, ValueEventArgs<string> arguments) //YYY
+        void OnLogMessage(object sender, ValueEventArgs<string> arguments) 
         {
             string message = arguments.Value;
 

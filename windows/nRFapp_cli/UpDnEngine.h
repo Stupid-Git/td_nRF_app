@@ -8,10 +8,12 @@
 //#using namespace Nordicsemi;
 #include "PipeSetup.h"
 
+#include "Protocol_T2.h"
+
 using namespace System;
 using namespace System::Threading;
 
-namespace nRFUart_TD
+namespace TDnRF
 {
 
     using namespace System;
@@ -29,6 +31,7 @@ namespace nRFUart_TD
         Nordicsemi::MasterEmulator^ masterEmulator;
         PipeSetup^ pipeSetup;
 
+        Protocol_T2^ protocol_T2; // 'T'
 
         void UpDnEngine_Setup(Nordicsemi::MasterEmulator^ master, PipeSetup^ pipe)
         {
@@ -37,7 +40,10 @@ namespace nRFUart_TD
         }
 
     public:
-        UpDnEngine(void);
+        UpDnEngine(void)
+        {
+            protocol_T2 = gcnew Protocol_T2(); // 'T'
+        };
 
         //=====================================================================
         //=====================================================================
@@ -187,6 +193,47 @@ namespace nRFUart_TD
 
             Dn_Send_CMD_11_Pkt(pktbuf);
             return(0);
+        }
+        
+        int32_t T2_RUINF()
+        {
+ 
+            array<System::Byte,1>^ pktbuf;// = gcnew array<Byte,1>(dataSize + 6);
+
+            pktbuf = protocol_T2->RUINF_get_send_packet();
+            Dn_Send_CMD_11_Pkt(pktbuf);
+
+            return(0);
+
+            /* TODO
+            if (serialPortOpen() == false)
+            {
+                richTextBox1.AppendText("ポートオープン失敗\r\n");
+                goto error_proc;
+            }
+
+            // ブレーク信号送出
+            sData[0] = 0x00;
+            serialPort1.Write(sData, 0, 1);
+            delay(50);
+
+            // コマンド送出
+            string[] command = { "RUINF:" };
+
+            command_make(command);
+
+            sendCommand();
+            t_recvCommand();
+
+            extraction();   // パラメータ抽出
+
+        error_proc: ;
+            richTextBox1.AppendText("終了\r\n");
+            serialPort1.Close();
+
+            // 操作禁止解除
+            operation_lift_ban();
+            TODO*/
         }
 
         //---------------------------------------------------------------------
@@ -797,9 +844,12 @@ namespace nRFUart_TD
                 Console::Write("Got T2 Response\n");
                 Console::WriteLine();
                 Console::WriteLine();
+
+                protocol_T2->RUINF_process_recv_packet(m_blkDn_buf); // 'T'
             }
 
         }
+
         void blk_dn_check0x01()
         {
 
@@ -1009,7 +1059,7 @@ namespace nRFUart_TD
 
             ///stop_Dn_timer();
             ///m_BlkDn_packetWaitTimeCount = 0;
-            r = blk_dn_add( buf, len);
+            r = blk_dn_add( buf, (uint16_t)len);
 
             r = blk_dn_chk();
             if(r == DN_CHK_OK)

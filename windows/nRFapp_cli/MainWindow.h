@@ -1,12 +1,12 @@
 #pragma once
 
 //TTOO #include "Form_Maikon.h"
-//using namespace nRFUart_TD;
+//using namespace TDnRF;
 //TTOO #include "serial_nrf_transportCLI.h"
 
 #include "nRF_TD_Controller.h" //#include "nRF_TD_Controller.h"
 
-using namespace nRFUart_TD;
+using namespace TDnRF;
 
 //TTOO #include "../maikon_sim/zapp_test.h"
 
@@ -59,6 +59,8 @@ namespace nRFapp_cli {
     private: System::Windows::Forms::Button^  btnSim_2;
     private: System::Windows::Forms::Button^  btnSim_3;
     private: System::Windows::Forms::Button^  btnSim_Stop;
+    private: System::Windows::Forms::Button^  btnT2_Test1;
+    private: System::Windows::Forms::Button^  btn_CMD12;
 
              // down to low watermark
              UInt32 logLowWatermark; // = 5000;
@@ -97,7 +99,7 @@ namespace nRFapp_cli {
             //TTOO formMaikon = nullptr;
             //TTOO sntCLI = nullptr;
 
-            // karel: Commented for now - InitializeNrfUartController();
+            // karel: Commented for now - Initialize_nRF_TD_Controller();
             // karel: Moved to manual start, so as to enable testing
 
             /* Retrieve persisted setting. */
@@ -117,7 +119,7 @@ namespace nRFapp_cli {
             }
         }
 
-        void InitializeNrfUartController()
+        void Initialize_nRF_TD_Controller()
         {
             controller = gcnew nRF_TD_Kontroller(); //controller = gcnew nRF_TD_Controller();
 
@@ -213,17 +215,17 @@ namespace nRFapp_cli {
         void SetStartSendIsEnabled(bool isEnabled)
         {
             //SetButtonIsEnabled(btnStartSend, isEnabled);
-            SetButtonIsEnabled(btnUARTStartSend100K, isEnabled);
+            //SetButtonIsEnabled(btnUARTStartSend100K, isEnabled);
         }
 
         void SetStartSendFileIsEnabled(bool isEnabled)
         {
-            SetButtonIsEnabled(btnUARTStartSendFile, isEnabled);
+            //SetButtonIsEnabled(btnUARTStartSendFile, isEnabled);
         }
 
         void SetStopDataIsEnabled(bool isEnabled)
         {
-            SetButtonIsEnabled(btnUARTStopData, isEnabled);
+            //SetButtonIsEnabled(btnUARTStopData, isEnabled);
         }
 #if 0
         void SetButtonIsEnabled(Button^ button, bool isEnabled)
@@ -353,17 +355,17 @@ namespace nRFapp_cli {
     protected: 
     private: System::Windows::Forms::Button^  btnNotifyON;
     private: System::Windows::Forms::ProgressBar^  progressBar;
-private: System::Windows::Forms::Button^  btnUARTStartSendFile;
 
-private: System::Windows::Forms::Button^  btnUARTStopData;
 
-private: System::Windows::Forms::Button^  btnUARTStartSend1K;
 
-private: System::Windows::Forms::Button^  btnUARTStartSend100K;
 
-private: System::Windows::Forms::Button^  btnUARTSend;
 
-    private: System::Windows::Forms::TextBox^  tbInput;
+
+
+
+
+
+
     private: System::Windows::Forms::RichTextBox^  richTextBox;
     private: System::Windows::Forms::CheckBox^  cbDebug;
     private: System::Windows::Forms::Label^  label1;
@@ -385,12 +387,6 @@ private: System::ComponentModel::IContainer^  components;
             this->btnNotifyOFF = (gcnew System::Windows::Forms::Button());
             this->btnNotifyON = (gcnew System::Windows::Forms::Button());
             this->progressBar = (gcnew System::Windows::Forms::ProgressBar());
-            this->btnUARTStartSendFile = (gcnew System::Windows::Forms::Button());
-            this->btnUARTStopData = (gcnew System::Windows::Forms::Button());
-            this->btnUARTStartSend1K = (gcnew System::Windows::Forms::Button());
-            this->btnUARTStartSend100K = (gcnew System::Windows::Forms::Button());
-            this->btnUARTSend = (gcnew System::Windows::Forms::Button());
-            this->tbInput = (gcnew System::Windows::Forms::TextBox());
             this->richTextBox = (gcnew System::Windows::Forms::RichTextBox());
             this->cbDebug = (gcnew System::Windows::Forms::CheckBox());
             this->label1 = (gcnew System::Windows::Forms::Label());
@@ -417,6 +413,8 @@ private: System::ComponentModel::IContainer^  components;
             this->btnSim_2 = (gcnew System::Windows::Forms::Button());
             this->btnSim_3 = (gcnew System::Windows::Forms::Button());
             this->btnSim_Stop = (gcnew System::Windows::Forms::Button());
+            this->btnT2_Test1 = (gcnew System::Windows::Forms::Button());
+            this->btn_CMD12 = (gcnew System::Windows::Forms::Button());
             this->SuspendLayout();
             // 
             // btnNotifyOFF
@@ -445,63 +443,6 @@ private: System::ComponentModel::IContainer^  components;
             this->progressBar->Name = L"progressBar";
             this->progressBar->Size = System::Drawing::Size(261, 19);
             this->progressBar->TabIndex = 23;
-            // 
-            // btnUARTStartSendFile
-            // 
-            this->btnUARTStartSendFile->Location = System::Drawing::Point(12, 282);
-            this->btnUARTStartSendFile->Name = L"btnUARTStartSendFile";
-            this->btnUARTStartSendFile->Size = System::Drawing::Size(291, 19);
-            this->btnUARTStartSendFile->TabIndex = 22;
-            this->btnUARTStartSendFile->Text = L"[U] Send File";
-            this->btnUARTStartSendFile->UseVisualStyleBackColor = true;
-            this->btnUARTStartSendFile->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnUARTStartSendFile_Click);
-            // 
-            // btnUARTStopData
-            // 
-            this->btnUARTStopData->Location = System::Drawing::Point(317, 257);
-            this->btnUARTStopData->Name = L"btnUARTStopData";
-            this->btnUARTStopData->Size = System::Drawing::Size(261, 19);
-            this->btnUARTStopData->TabIndex = 21;
-            this->btnUARTStopData->Text = L"[U] Stop Data Transfer";
-            this->btnUARTStopData->UseVisualStyleBackColor = true;
-            this->btnUARTStopData->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnUARTStopData_Click);
-            // 
-            // btnUARTStartSend1K
-            // 
-            this->btnUARTStartSend1K->Location = System::Drawing::Point(164, 257);
-            this->btnUARTStartSend1K->Name = L"btnUARTStartSend1K";
-            this->btnUARTStartSend1K->Size = System::Drawing::Size(139, 19);
-            this->btnUARTStartSend1K->TabIndex = 20;
-            this->btnUARTStartSend1K->Text = L"[U] Send 1KB Data";
-            this->btnUARTStartSend1K->UseVisualStyleBackColor = true;
-            this->btnUARTStartSend1K->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnUARTStartSend1K_Click);
-            // 
-            // btnUARTStartSend100K
-            // 
-            this->btnUARTStartSend100K->Location = System::Drawing::Point(12, 257);
-            this->btnUARTStartSend100K->Name = L"btnUARTStartSend100K";
-            this->btnUARTStartSend100K->Size = System::Drawing::Size(146, 19);
-            this->btnUARTStartSend100K->TabIndex = 19;
-            this->btnUARTStartSend100K->Text = L"[U] Send 100KB Data";
-            this->btnUARTStartSend100K->UseVisualStyleBackColor = true;
-            this->btnUARTStartSend100K->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnUARTStartSend100K_Click);
-            // 
-            // btnUARTSend
-            // 
-            this->btnUARTSend->Location = System::Drawing::Point(491, 232);
-            this->btnUARTSend->Name = L"btnUARTSend";
-            this->btnUARTSend->Size = System::Drawing::Size(87, 19);
-            this->btnUARTSend->TabIndex = 18;
-            this->btnUARTSend->Text = L"[U] Send text";
-            this->btnUARTSend->UseVisualStyleBackColor = true;
-            this->btnUARTSend->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnUARTSend_Click);
-            // 
-            // tbInput
-            // 
-            this->tbInput->Location = System::Drawing::Point(14, 232);
-            this->tbInput->Name = L"tbInput";
-            this->tbInput->Size = System::Drawing::Size(457, 19);
-            this->tbInput->TabIndex = 17;
             // 
             // richTextBox
             // 
@@ -603,7 +544,7 @@ private: System::ComponentModel::IContainer^  components;
             // 
             // btn_CMD13
             // 
-            this->btn_CMD13->Location = System::Drawing::Point(306, 14);
+            this->btn_CMD13->Location = System::Drawing::Point(386, 14);
             this->btn_CMD13->Name = L"btn_CMD13";
             this->btn_CMD13->Size = System::Drawing::Size(65, 19);
             this->btn_CMD13->TabIndex = 32;
@@ -643,7 +584,7 @@ private: System::ComponentModel::IContainer^  components;
             // 
             // btnT2_Test
             // 
-            this->btnT2_Test->Location = System::Drawing::Point(351, 51);
+            this->btnT2_Test->Location = System::Drawing::Point(306, 51);
             this->btnT2_Test->Name = L"btnT2_Test";
             this->btnT2_Test->Size = System::Drawing::Size(55, 19);
             this->btnT2_Test->TabIndex = 36;
@@ -758,11 +699,33 @@ private: System::ComponentModel::IContainer^  components;
             this->btnSim_Stop->UseVisualStyleBackColor = true;
             this->btnSim_Stop->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnSim_Stop_Click);
             // 
+            // btnT2_Test1
+            // 
+            this->btnT2_Test1->Location = System::Drawing::Point(306, 76);
+            this->btnT2_Test1->Name = L"btnT2_Test1";
+            this->btnT2_Test1->Size = System::Drawing::Size(100, 19);
+            this->btnT2_Test1->TabIndex = 48;
+            this->btnT2_Test1->Text = L"T2_Test1";
+            this->btnT2_Test1->UseVisualStyleBackColor = true;
+            this->btnT2_Test1->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btnT2_Test1_Click);
+            // 
+            // btn_CMD12
+            // 
+            this->btn_CMD12->Location = System::Drawing::Point(306, 14);
+            this->btn_CMD12->Name = L"btn_CMD12";
+            this->btn_CMD12->Size = System::Drawing::Size(65, 19);
+            this->btn_CMD12->TabIndex = 49;
+            this->btn_CMD12->Text = L"CMD_12";
+            this->btn_CMD12->UseVisualStyleBackColor = true;
+            this->btn_CMD12->Click += gcnew System::EventHandler(this, &MainWindow_CLI::btn_CMD12_Click);
+            // 
             // MainWindow_CLI
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(590, 589);
+            this->Controls->Add(this->btn_CMD12);
+            this->Controls->Add(this->btnT2_Test1);
             this->Controls->Add(this->btnSim_Stop);
             this->Controls->Add(this->btnSim_3);
             this->Controls->Add(this->btnSim_2);
@@ -788,12 +751,6 @@ private: System::ComponentModel::IContainer^  components;
             this->Controls->Add(this->btnNotifyOFF);
             this->Controls->Add(this->btnNotifyON);
             this->Controls->Add(this->progressBar);
-            this->Controls->Add(this->btnUARTStartSendFile);
-            this->Controls->Add(this->btnUARTStopData);
-            this->Controls->Add(this->btnUARTStartSend1K);
-            this->Controls->Add(this->btnUARTStartSend100K);
-            this->Controls->Add(this->btnUARTSend);
-            this->Controls->Add(this->tbInput);
             this->Controls->Add(this->richTextBox);
             this->Controls->Add(this->cbDebug);
             this->Controls->Add(this->label1);
@@ -904,7 +861,7 @@ private: System::ComponentModel::IContainer^  components;
     private:
         System::Void btnNormalStart_Click(System::Object^  sender, System::EventArgs^  e)
         {
-            InitializeNrfUartController(); // Moved here for testing
+            Initialize_nRF_TD_Controller(); // Moved here for testing
         }
 
     private: 
@@ -981,7 +938,7 @@ private: System::ComponentModel::IContainer^  components;
         //===== UART ==========================================================
         //=====================================================================
         //=====================================================================
-        System::Void btnUARTSend_Click(System::Object^  sender, System::EventArgs^  e) 
+        System::Void XXXbtnUARTSend_Click(System::Object^  sender, System::EventArgs^  e) 
         {
             /*defunct
             if (!isControllerConnected)
@@ -992,7 +949,7 @@ private: System::ComponentModel::IContainer^  components;
             */
         }
 
-        System::Void btnUARTStartSendFile_Click(System::Object^  sender, System::EventArgs^  e) 
+        System::Void XXXbtnUARTStartSendFile_Click(System::Object^  sender, System::EventArgs^  e) 
         {
 
             String^ sendFilePath = String::Empty;
@@ -1033,11 +990,11 @@ private: System::ComponentModel::IContainer^  components;
             TODO*/
         }
 
-        System::Void btnUARTStartSend100K_Click(System::Object^  sender, System::EventArgs^  e)
+        System::Void XXXbtnUARTStartSend100K_Click(System::Object^  sender, System::EventArgs^  e)
         {
             UARTSend100K();
         }
-        System::Void btnUARTStartSend1K_Click(System::Object^  sender, System::EventArgs^  e)
+        System::Void XXXbtnUARTStartSend1K_Click(System::Object^  sender, System::EventArgs^  e)
         {
             //UARTSend1K();
         }
@@ -1058,7 +1015,7 @@ private: System::ComponentModel::IContainer^  components;
             TODO*/
         }
 
-        System::Void btnUARTStopData_Click(System::Object^  sender, System::EventArgs^  e)
+        System::Void XXXbtnUARTStopData_Click(System::Object^  sender, System::EventArgs^  e)
         {
             AddToOutput("Stop transfer");
             controller->UARTStopSendData();
@@ -1070,11 +1027,18 @@ private: System::ComponentModel::IContainer^  components;
         //===== CMD ===========================================================
         //=====================================================================
         //=====================================================================
+        System::Void btn_CMD12_Click(System::Object^  sender, System::EventArgs^  e)
+        {
+            if (!isControllerConnected)
+                return;
+            L6->Dn_Send_CMD_12(); //controller->udEngine->Dn_Send_CMD_12();
+        }
+
         System::Void btn_CMD13_Click(System::Object^  sender, System::EventArgs^  e)
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->Dn_Send_CMD_13();
+            L6->Dn_Send_CMD_13(); //controller->udEngine->Dn_Send_CMD_13();
         }
 
 
@@ -1087,16 +1051,15 @@ private: System::ComponentModel::IContainer^  components;
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->Dn_Send_T2_DummyTEST1();
-            //controller->udEngine->Dn_Send_CMD_12();
+            L6->Dn_Send_T2_DummyTEST1(); //controller->udEngine->Dn_Send_T2_DummyTEST1();
         }
 
         System::Void btnSendXX4_Click(System::Object^  sender, System::EventArgs^  e)
         {
             if (!isControllerConnected)
                 return;
-            //controller->udEngine->Dn_Dummy_Send42();
-            //controller->Send_Dcmd(tbInput->Text);
+            //L6->Dn_Dummy_Send42(); //controller->udEngine->Dn_Dummy_Send42();
+            //L6->?? //controller->Send_Dcmd(tbInput->Text);
         }
 
         System::Void btnSendXX5_Click(System::Object^  sender, System::EventArgs^  e)
@@ -1123,7 +1086,14 @@ private: System::ComponentModel::IContainer^  components;
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->Dn_Send_T2_DummyTEST1();
+            L6->Dn_Send_T2_DummyTEST1(); //controller->udEngine->Dn_Send_T2_DummyTEST1();
+        }
+
+        System::Void btnT2_Test1_Click(System::Object^  sender, System::EventArgs^  e)
+        {
+            if (!isControllerConnected)
+                return;
+            L6->T2_RUINF(); //controller->udEngine->T2_RUINF();
         }
 
         //=====================================================================
@@ -1135,7 +1105,7 @@ private: System::ComponentModel::IContainer^  components;
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->Dn_Send_0x01_CMD_01_0x58();
+            L6->Dn_Send_0x01_CMD_01_0x58(); //controller->udEngine->Dn_Send_0x01_CMD_01_0x58();
         }
 
 
@@ -1145,21 +1115,21 @@ private: System::ComponentModel::IContainer^  components;
                 return;
             uint16_t recCount;  
             recCount = Convert::ToInt16( tbBlockNum->Text, 10);
-            controller->udEngine->Dn_Send_0x01_CMD_01_0xF5(recCount);
+            L6->Dn_Send_0x01_CMD_01_0xF5(recCount); //controller->udEngine->Dn_Send_0x01_CMD_01_0xF5(recCount);
         }
 
         System::Void btn01_F8_Click(System::Object^  sender, System::EventArgs^  e)
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->Dn_Send_0x01_CMD_01_0xF8();
+            L6->Dn_Send_0x01_CMD_01_0xF8(); //controller->udEngine->Dn_Send_0x01_CMD_01_0xF8();
         }
 
         System::Void btn01_F9_Click(System::Object^  sender, System::EventArgs^  e)
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->Dn_Send_0x01_CMD_01_0xF9(1024);
+            L6->Dn_Send_0x01_CMD_01_0xF9(1024); //controller->udEngine->Dn_Send_0x01_CMD_01_0xF9(1024);
         }
 
         System::Void btn01_44_Click(System::Object^  sender, System::EventArgs^  e)
@@ -1172,7 +1142,7 @@ private: System::ComponentModel::IContainer^  components;
             recCount = Convert::ToInt16( tbBlockNum->Text, 10);
             uint16_t byteCount;  
             byteCount = recCount * 8;
-            controller->udEngine->Dn_Send_0x01_CMD_01_0x44(byteCount);//2048 + 32);
+            L6->Dn_Send_0x01_CMD_01_0x44(byteCount);//2048 + 32); //controller->udEngine->Dn_Send_0x01_CMD_01_0x44(byteCount);//2048 + 32);
         }
         System::Void btn01_45_Click(System::Object^  sender, System::EventArgs^  e)
         {
@@ -1181,7 +1151,7 @@ private: System::ComponentModel::IContainer^  components;
 
             uint16_t blkNum;  
             blkNum = Convert::ToInt16( tbBlockNum->Text, 10);
-            controller->udEngine->Dn_Send_0x01_CMD_01_0x45(blkNum);
+            L6->Dn_Send_0x01_CMD_01_0x45(blkNum); //controller->udEngine->Dn_Send_0x01_CMD_01_0x45(blkNum);
 
         }
 
@@ -1190,7 +1160,7 @@ private: System::ComponentModel::IContainer^  components;
         {
             if (!isControllerConnected)
                 return;
-            controller->udEngine->UpDn_Read_Rctrl_test();
+            L6->UpDn_Read_Rctrl_test(); //controller->udEngine->UpDn_Read_Rctrl_test();
         }
         System::Void btnWriteTest_Click(System::Object^  sender, System::EventArgs^  e)
         {
@@ -1199,7 +1169,7 @@ private: System::ComponentModel::IContainer^  components;
 
             array<uint8_t,1>^ buf = gcnew array<uint8_t,1>(20);
 
-            controller->udEngine->UpDn_Write_Wctrl_test(buf, buf->Length);
+            L6->UpDn_Write_Wctrl_test(buf, buf->Length); //controller->udEngine->UpDn_Write_Wctrl_test(buf, buf->Length);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -1252,5 +1222,8 @@ private: System::ComponentModel::IContainer^  components;
         System::Void btnSim_3_Click(System::Object^  sender, System::EventArgs^  e)
         {
         }
+
+
+
 };
 }

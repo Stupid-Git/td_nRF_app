@@ -30,20 +30,14 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnConnect = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.cbDebug = new System.Windows.Forms.CheckBox();
-            this.tbInput = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
-            this.btnStartSend100K = new System.Windows.Forms.Button();
-            this.btnStopData = new System.Windows.Forms.Button();
-            this.btnStartSendFile = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.richTextBox = new System.Windows.Forms.TextBox();
-            this.btnStartSend1K = new System.Windows.Forms.Button();
-            this.btnNotifyON = new System.Windows.Forms.Button();
-            this.btnNotifyOFF = new System.Windows.Forms.Button();
             this.btn01_58 = new System.Windows.Forms.Button();
             this.btn01_F9 = new System.Windows.Forms.Button();
             this.btn01_45 = new System.Windows.Forms.Button();
@@ -52,6 +46,14 @@
             this.btn01_F5 = new System.Windows.Forms.Button();
             this.tbBlockNum = new System.Windows.Forms.TextBox();
             this.btnMaikon = new System.Windows.Forms.Button();
+            this.btnTEST_BUTTON = new System.Windows.Forms.Button();
+            this.btn_CMD12 = new System.Windows.Forms.Button();
+            this.btn_CMD13 = new System.Windows.Forms.Button();
+            this.btnT2_RUINF = new System.Windows.Forms.Button();
+            this.btnSunaba = new System.Windows.Forms.Button();
+            this.btnSerLow_Create = new System.Windows.Forms.Button();
+            this.btnSerLow_Close = new System.Windows.Forms.Button();
+            this.btnSerLow_Open = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,9 +70,28 @@
             // 
             // fileToolStripMenuItem
             // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripComboBox1,
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(36, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // toolStripComboBox1
+            // 
+            this.toolStripComboBox1.Items.AddRange(new object[] {
+            "nRF Board",
+            "Real BLE",
+            "Real Serial",
+            "Real BLE and Serial"});
+            this.toolStripComboBox1.Name = "toolStripComboBox1";
+            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 20);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
             // 
             // helpToolStripMenuItem
             // 
@@ -108,53 +129,6 @@
             this.cbDebug.UseVisualStyleBackColor = true;
             this.cbDebug.CheckedChanged += new System.EventHandler(this.cbDebug_CheckedChanged);
             // 
-            // tbInput
-            // 
-            this.tbInput.Location = new System.Drawing.Point(12, 211);
-            this.tbInput.Name = "tbInput";
-            this.tbInput.Size = new System.Drawing.Size(480, 19);
-            this.tbInput.TabIndex = 5;
-            // 
-            // btnSend
-            // 
-            this.btnSend.Location = new System.Drawing.Point(498, 211);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(76, 19);
-            this.btnSend.TabIndex = 7;
-            this.btnSend.Text = "Send Text";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
-            // btnStartSend100K
-            // 
-            this.btnStartSend100K.Location = new System.Drawing.Point(12, 236);
-            this.btnStartSend100K.Name = "btnStartSend100K";
-            this.btnStartSend100K.Size = new System.Drawing.Size(130, 19);
-            this.btnStartSend100K.TabIndex = 8;
-            this.btnStartSend100K.Text = "Send 100kB data";
-            this.btnStartSend100K.UseVisualStyleBackColor = true;
-            this.btnStartSend100K.Click += new System.EventHandler(this.btnStartSend100K_Click);
-            // 
-            // btnStopData
-            // 
-            this.btnStopData.Location = new System.Drawing.Point(304, 236);
-            this.btnStopData.Name = "btnStopData";
-            this.btnStopData.Size = new System.Drawing.Size(270, 19);
-            this.btnStopData.TabIndex = 9;
-            this.btnStopData.Text = "Stop Data Transfer";
-            this.btnStopData.UseVisualStyleBackColor = true;
-            this.btnStopData.Click += new System.EventHandler(this.btnStopData_Click);
-            // 
-            // btnStartSendFile
-            // 
-            this.btnStartSendFile.Location = new System.Drawing.Point(14, 261);
-            this.btnStartSendFile.Name = "btnStartSendFile";
-            this.btnStartSendFile.Size = new System.Drawing.Size(270, 19);
-            this.btnStartSendFile.TabIndex = 10;
-            this.btnStartSendFile.Text = "Send file";
-            this.btnStartSendFile.UseVisualStyleBackColor = true;
-            this.btnStartSendFile.Click += new System.EventHandler(this.btnStartSendFile_Click);
-            // 
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(304, 261);
@@ -170,36 +144,6 @@
             this.richTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.richTextBox.Size = new System.Drawing.Size(562, 248);
             this.richTextBox.TabIndex = 12;
-            // 
-            // btnStartSend1K
-            // 
-            this.btnStartSend1K.Location = new System.Drawing.Point(154, 236);
-            this.btnStartSend1K.Name = "btnStartSend1K";
-            this.btnStartSend1K.Size = new System.Drawing.Size(130, 19);
-            this.btnStartSend1K.TabIndex = 13;
-            this.btnStartSend1K.Text = "Send 1kB data";
-            this.btnStartSend1K.UseVisualStyleBackColor = true;
-            this.btnStartSend1K.Click += new System.EventHandler(this.btnStartSend1K_Click);
-            // 
-            // btnNotifyON
-            // 
-            this.btnNotifyON.Location = new System.Drawing.Point(115, 27);
-            this.btnNotifyON.Name = "btnNotifyON";
-            this.btnNotifyON.Size = new System.Drawing.Size(85, 23);
-            this.btnNotifyON.TabIndex = 14;
-            this.btnNotifyON.Text = "Notify ON";
-            this.btnNotifyON.UseVisualStyleBackColor = true;
-            this.btnNotifyON.Click += new System.EventHandler(this.btnNotifyON_Click);
-            // 
-            // btnNotifyOFF
-            // 
-            this.btnNotifyOFF.Location = new System.Drawing.Point(206, 27);
-            this.btnNotifyOFF.Name = "btnNotifyOFF";
-            this.btnNotifyOFF.Size = new System.Drawing.Size(85, 23);
-            this.btnNotifyOFF.TabIndex = 15;
-            this.btnNotifyOFF.Text = "Notify OFF";
-            this.btnNotifyOFF.UseVisualStyleBackColor = true;
-            this.btnNotifyOFF.Click += new System.EventHandler(this.btnNotifyOFF_Click);
             // 
             // btn01_58
             // 
@@ -278,11 +222,99 @@
             this.btnMaikon.UseVisualStyleBackColor = true;
             this.btnMaikon.Click += new System.EventHandler(this.btnMaikon_Click);
             // 
+            // btnTEST_BUTTON
+            // 
+            this.btnTEST_BUTTON.Location = new System.Drawing.Point(342, 130);
+            this.btnTEST_BUTTON.Name = "btnTEST_BUTTON";
+            this.btnTEST_BUTTON.Size = new System.Drawing.Size(75, 23);
+            this.btnTEST_BUTTON.TabIndex = 24;
+            this.btnTEST_BUTTON.Text = "Test Button";
+            this.btnTEST_BUTTON.UseVisualStyleBackColor = true;
+            this.btnTEST_BUTTON.Click += new System.EventHandler(this.btnTEST_BUTTON_Click);
+            // 
+            // btn_CMD12
+            // 
+            this.btn_CMD12.Location = new System.Drawing.Point(317, 29);
+            this.btn_CMD12.Name = "btn_CMD12";
+            this.btn_CMD12.Size = new System.Drawing.Size(65, 19);
+            this.btn_CMD12.TabIndex = 53;
+            this.btn_CMD12.Text = "CMD_12";
+            this.btn_CMD12.UseVisualStyleBackColor = true;
+            this.btn_CMD12.Click += new System.EventHandler(this.btn_CMD12_Click);
+            // 
+            // btn_CMD13
+            // 
+            this.btn_CMD13.Location = new System.Drawing.Point(397, 29);
+            this.btn_CMD13.Name = "btn_CMD13";
+            this.btn_CMD13.Size = new System.Drawing.Size(65, 19);
+            this.btn_CMD13.TabIndex = 50;
+            this.btn_CMD13.Text = "CMD_13";
+            this.btn_CMD13.UseVisualStyleBackColor = true;
+            this.btn_CMD13.Click += new System.EventHandler(this.btn_CMD13_Click);
+            // 
+            // btnT2_RUINF
+            // 
+            this.btnT2_RUINF.Location = new System.Drawing.Point(317, 66);
+            this.btnT2_RUINF.Name = "btnT2_RUINF";
+            this.btnT2_RUINF.Size = new System.Drawing.Size(100, 19);
+            this.btnT2_RUINF.TabIndex = 54;
+            this.btnT2_RUINF.Text = "T2_RUINF";
+            this.btnT2_RUINF.UseVisualStyleBackColor = true;
+            this.btnT2_RUINF.Click += new System.EventHandler(this.btnT2_RUINF_Click);
+            // 
+            // btnSunaba
+            // 
+            this.btnSunaba.Location = new System.Drawing.Point(522, 91);
+            this.btnSunaba.Name = "btnSunaba";
+            this.btnSunaba.Size = new System.Drawing.Size(55, 19);
+            this.btnSunaba.TabIndex = 55;
+            this.btnSunaba.Text = "Sunaba";
+            this.btnSunaba.UseVisualStyleBackColor = true;
+            this.btnSunaba.Click += new System.EventHandler(this.btnSunaba_Click);
+            // 
+            // btnSerLow_Create
+            // 
+            this.btnSerLow_Create.Location = new System.Drawing.Point(506, 126);
+            this.btnSerLow_Create.Name = "btnSerLow_Create";
+            this.btnSerLow_Create.Size = new System.Drawing.Size(71, 19);
+            this.btnSerLow_Create.TabIndex = 56;
+            this.btnSerLow_Create.Text = "SL_Create";
+            this.btnSerLow_Create.UseVisualStyleBackColor = true;
+            this.btnSerLow_Create.Click += new System.EventHandler(this.btnSerLow_Create_Click);
+            // 
+            // btnSerLow_Close
+            // 
+            this.btnSerLow_Close.Location = new System.Drawing.Point(506, 176);
+            this.btnSerLow_Close.Name = "btnSerLow_Close";
+            this.btnSerLow_Close.Size = new System.Drawing.Size(71, 19);
+            this.btnSerLow_Close.TabIndex = 57;
+            this.btnSerLow_Close.Text = "SL_Close";
+            this.btnSerLow_Close.UseVisualStyleBackColor = true;
+            this.btnSerLow_Close.Click += new System.EventHandler(this.btnSerLow_Close_Click);
+            // 
+            // btnSerLow_Open
+            // 
+            this.btnSerLow_Open.Location = new System.Drawing.Point(506, 151);
+            this.btnSerLow_Open.Name = "btnSerLow_Open";
+            this.btnSerLow_Open.Size = new System.Drawing.Size(71, 19);
+            this.btnSerLow_Open.TabIndex = 58;
+            this.btnSerLow_Open.Text = "SL_Open";
+            this.btnSerLow_Open.UseVisualStyleBackColor = true;
+            this.btnSerLow_Open.Click += new System.EventHandler(this.btnSerLow_Open_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(589, 561);
+            this.Controls.Add(this.btnSerLow_Open);
+            this.Controls.Add(this.btnSerLow_Close);
+            this.Controls.Add(this.btnSerLow_Create);
+            this.Controls.Add(this.btnSunaba);
+            this.Controls.Add(this.btnT2_RUINF);
+            this.Controls.Add(this.btn_CMD12);
+            this.Controls.Add(this.btn_CMD13);
+            this.Controls.Add(this.btnTEST_BUTTON);
             this.Controls.Add(this.btnMaikon);
             this.Controls.Add(this.tbBlockNum);
             this.Controls.Add(this.btn01_F5);
@@ -291,16 +323,8 @@
             this.Controls.Add(this.btn01_45);
             this.Controls.Add(this.btn01_F9);
             this.Controls.Add(this.btn01_58);
-            this.Controls.Add(this.btnNotifyOFF);
-            this.Controls.Add(this.btnNotifyON);
-            this.Controls.Add(this.btnStartSend1K);
             this.Controls.Add(this.richTextBox);
             this.Controls.Add(this.progressBar);
-            this.Controls.Add(this.btnStartSendFile);
-            this.Controls.Add(this.btnStopData);
-            this.Controls.Add(this.btnStartSend100K);
-            this.Controls.Add(this.btnSend);
-            this.Controls.Add(this.tbInput);
             this.Controls.Add(this.cbDebug);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnConnect);
@@ -308,6 +332,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainWindow";
             this.Text = "MainWindow";
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -323,16 +348,8 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbDebug;
-        private System.Windows.Forms.TextBox tbInput;
-        private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.Button btnStartSend100K;
-        private System.Windows.Forms.Button btnStopData;
-        private System.Windows.Forms.Button btnStartSendFile;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.TextBox richTextBox;
-        private System.Windows.Forms.Button btnStartSend1K;
-        private System.Windows.Forms.Button btnNotifyON;
-        private System.Windows.Forms.Button btnNotifyOFF;
         private System.Windows.Forms.Button btn01_58;
         private System.Windows.Forms.Button btn01_F9;
         private System.Windows.Forms.Button btn01_45;
@@ -341,5 +358,15 @@
         private System.Windows.Forms.Button btn01_F5;
         private System.Windows.Forms.TextBox tbBlockNum;
         private System.Windows.Forms.Button btnMaikon;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.Button btnTEST_BUTTON;
+        private System.Windows.Forms.Button btn_CMD12;
+        private System.Windows.Forms.Button btn_CMD13;
+        private System.Windows.Forms.Button btnT2_RUINF;
+        private System.Windows.Forms.Button btnSunaba;
+        private System.Windows.Forms.Button btnSerLow_Create;
+        private System.Windows.Forms.Button btnSerLow_Close;
+        private System.Windows.Forms.Button btnSerLow_Open;
     }
 }

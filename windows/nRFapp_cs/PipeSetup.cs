@@ -13,7 +13,7 @@
 using System;
 using Nordicsemi;
 
-namespace nRFUart_TD
+namespace TDnRF
 {
     public class PipeSetup
     {
@@ -94,8 +94,8 @@ namespace nRFUart_TD
         public void PerformPipeSetup()
         {
             // GAP service 
-            BtUuid uartOverBtleUuid = new BtUuid("6e400001b5a3f393e0a9e50e24dcca42");
-            masterEmulator.SetupAddService(uartOverBtleUuid, PipeStore.Remote);
+            BtUuid TDudOverBtleUuid = new BtUuid("6e400001b5a3f393e0a9e50e24dcca42");
+            masterEmulator.SetupAddService(TDudOverBtleUuid, PipeStore.Remote);
 
             //===== Dn =====
             // DCMD characteristic (Down Link Command 0x0002) 

@@ -27,7 +27,7 @@ using namespace System::Threading;
 
 
 
-namespace nRFUart_TD
+namespace TDnRF
 {
 
 using System::Threading::Tasks::Task;
@@ -362,9 +362,9 @@ using System::Text::Encoding;
 #endif
 
         /// <summary>
-        /// Signal UARTStartSendData task to cancel sending of data.
+        /// Signal StartSendData task to cancel sending of data.
         /// </summary>
-        void UARTStopSendData() //NNN  //YYY
+        void UARTStopSendData()
         {
             UARTsendData = false;
         }
@@ -372,7 +372,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Disconnect from peer device.
         /// </summary>
-        void InitiateDisconnect() //YYY
+        void InitiateDisconnect() 
         {
             if (!masterEmulator->IsConnected)
             {
@@ -385,7 +385,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Close MasterEmulator.
         /// </summary>
-        void Close() //YYY
+        void Close() 
         {
             if (!masterEmulator->IsOpen)
             {
@@ -403,7 +403,7 @@ using System::Text::Encoding;
         /// <param name="message">The message String^ to add to the log.</param>
         void AddToLog(String^ message)
         {
-            //TODO if (LogMessage != nullptr)
+            /*TODO*/ //if (LogMessage != nullptr)
             {
                 LogMessage(this, gcnew OutputReceivedEventArgs( message) );
             }
@@ -412,7 +412,7 @@ using System::Text::Encoding;
             Console::WriteLine("AddToLog : " + message); //TODO Trace::WriteLine(message);
         }
 
-        void karelLog(String^ message) //YYY
+        void karelLog(String^ message) 
         {
             AddToLog("karelLog : " + message);
         }
@@ -420,7 +420,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Convenience method for logging exception messages.
         /// </summary>
-        void LogErrorMessage(String^ errorMessage, String^ stackTrace) //YYY
+        void LogErrorMessage(String^ errorMessage, String^ stackTrace) 
         {
             AddToLog(errorMessage);
             Console::WriteLine(stackTrace); //TODO Trace.WriteLine(stackTrace);
@@ -430,7 +430,7 @@ using System::Text::Encoding;
         /// Get the path to the log file of MasterEmulator.
         /// </summary>
         /// <returns>Returns path to log file.</returns>
-        String^ GetLogfilePath() //YYY
+        String^ GetLogfilePath() 
         {
             return masterEmulator->GetLogFilePath();
 
@@ -450,8 +450,7 @@ using System::Text::Encoding;
                 OpenMasterEmulatorDevice(device);
 
                 pipeSetup = gcnew PipeSetup(masterEmulator);
-                //pipeSetup->PerformPipeSetup_nRFUart();
-                pipeSetup->PerformPipeSetup();
+                pipeSetup->PerformPipeSetup(); //pipeSetup->PerformPipeSetup_nRFUart();
 
                 udEngine = gcnew UpDnEngine();
                 udEngine->UpDnEngine_Setup(masterEmulator, pipeSetup);
@@ -465,7 +464,7 @@ using System::Text::Encoding;
                     ex->StackTrace);
             }
         }
-        void Initialize() //NNN //YYY ??
+        void Initialize()
         {
 #if 1
             AddToLog(gcnew String("Initialize is starting Up dude") );
@@ -500,7 +499,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Create MasterEmulator instance.
         /// </summary>
-        void InitializeMasterEmulator() //YYY
+        void InitializeMasterEmulator() 
         {
             AddToLog("Loading...");
             masterEmulator = gcnew Nordicsemi::MasterEmulator();
@@ -509,7 +508,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Register event handlers for MasterEmulator events.
         /// </summary>
-        void RegisterEventHandlers() //YYY
+        void RegisterEventHandlers() 
         {
             masterEmulator->Connected += gcnew  EventHandler<EventArgs^>(this, &nRF_TD_Kontroller::OnConnected );
             masterEmulator->ConnectionUpdateRequest += gcnew  EventHandler<Nordicsemi::ConnectionUpdateRequestEventArgs^>(this, &nRF_TD_Kontroller::OnConnectionUpdateRequest );
@@ -517,14 +516,6 @@ using System::Text::Encoding;
             masterEmulator->DeviceDiscovered += gcnew  EventHandler<Nordicsemi::ValueEventArgs<Nordicsemi::BtDevice^>^>(this, &nRF_TD_Kontroller::OnDeviceDiscovered );
             masterEmulator->Disconnected += gcnew  EventHandler<Nordicsemi::ValueEventArgs<Nordicsemi::DisconnectReason>^>(this, &nRF_TD_Kontroller::OnDisconnected );
             masterEmulator->LogMessage += gcnew  EventHandler<Nordicsemi::ValueEventArgs<System::String^>^>(this, &nRF_TD_Kontroller::OnLogMessage );
-#if 0
-            masterEmulator->Connected += OnConnected;
-            masterEmulator->ConnectionUpdateRequest += OnConnectionUpdateRequest;
-            masterEmulator->DataReceived += OnDataReceived;
-            masterEmulator->DeviceDiscovered += OnDeviceDiscovered;
-            masterEmulator->Disconnected += OnDisconnected;
-            masterEmulator->LogMessage += OnLogMessage;
-#endif
         }
 
         /// <summary>
@@ -532,11 +523,10 @@ using System::Text::Encoding;
         /// If more than one is connected it will simply return the first in the list.
         /// </summary>
         /// <returns>Returns the first master emulator device found.</returns>
-        String^ FindUsbDevice() //YYY
+        String^ FindUsbDevice() 
         {
             /* The UsbDeviceType argument is used for filtering master emulator device types. */
-            auto devices = masterEmulator->EnumerateUsb(Nordicsemi::UsbDeviceType::AnyMasterEmulator);
-            //var devices = masterEmulator->EnumerateUsb(UsbDeviceType.AnyMasterEmulator);
+            auto devices = masterEmulator->EnumerateUsb(Nordicsemi::UsbDeviceType::AnyMasterEmulator); //var devices = masterEmulator->EnumerateUsb(UsbDeviceType.AnyMasterEmulator);
 
             if (devices->Count > 0)
             {
@@ -552,7 +542,7 @@ using System::Text::Encoding;
         /// Tell the api to use the given master emulator device.
         /// </summary>
         /// <param name="device"></param>
-        void OpenMasterEmulatorDevice(String^ device) //YYY
+        void OpenMasterEmulatorDevice(String^ device) 
         {
             if (masterEmulator->IsOpen)
             {
@@ -566,7 +556,7 @@ using System::Text::Encoding;
         /// <summary>
         /// By calling Run, the pipesetup is processed and the stack engine is started.
         /// </summary>
-        void Run() //YYY
+        void Run() 
         {
             if (masterEmulator->IsRunning)
             {
@@ -582,7 +572,7 @@ using System::Text::Encoding;
         /// and scan repsonse packets.
         /// </summary>
         /// <returns></returns>
-        bool StartDeviceDiscovery() //YYY
+        bool StartDeviceDiscovery() 
         {
             if (!masterEmulator->IsRunning)
             {
@@ -616,7 +606,7 @@ using System::Text::Encoding;
         };
         */
 
-        void karelDumpDevice(Nordicsemi::BtDevice^ device) //YYY
+        void karelDumpDevice(Nordicsemi::BtDevice^ device) 
         {
             //###
             /*
@@ -715,8 +705,8 @@ using System::Text::Encoding;
         /// </summary>
         /// <param name="device">Device to connect to.</param>
         /// <returns>Returns success indication.</returns>
-        //bool Connect(BtDevice device) //YYY
-        bool Connect_nRFUart(BtDevice device) //YYY
+        //bool Connect(BtDevice device) 
+        bool Connect_nRFUart(BtDevice device) 
         {
             if (masterEmulator->IsDeviceDiscoveryOngoing)
             {
@@ -754,7 +744,7 @@ using System::Text::Encoding;
 #endif
 
 #if 1
-        bool Connect/*_nRFTD1*/(Nordicsemi::BtDevice^ device) //YYY
+        bool Connect/*_nRFTD1*/(Nordicsemi::BtDevice^ device) 
         {
             //if (masterEmulator->IsDeviceDiscoveryOngoing)
             while (masterEmulator->IsDeviceDiscoveryOngoing)
@@ -784,7 +774,7 @@ using System::Text::Encoding;
         /// By discovering pipes, the pipe setup we have specified will be matched up
         /// to the remote device's ATT table by ATT service discovery.
         /// </summary>
-        void DiscoverPipes() //NNN
+        void DiscoverPipes()
         {
             bool success = masterEmulator->DiscoverPipes();
 
@@ -798,11 +788,9 @@ using System::Text::Encoding;
         /// Pipes of type PipeType.Receive must be opened before they will start receiving notifications.
         /// This maps to ATT Client Configuration Descriptors.
         /// </summary>
-        void OpenRemotePipes() //NNN
+        void OpenRemotePipes()
         {
-            //var openedPipesEnumeration = masterEmulator->OpenAllRemotePipes();
             auto  openedPipesEnumeration = masterEmulator->OpenAllRemotePipes();
-
             List<int>^ openedPipes = gcnew List<int>(openedPipesEnumeration);
         }
 
@@ -845,7 +833,7 @@ using System::Text::Encoding;
             }    
         }
 
-        void OnDeviceDiscovered(Object^ sender, Nordicsemi::ValueEventArgs<Nordicsemi::BtDevice^>^ arguments) //YYY
+        void OnDeviceDiscovered(Object^ sender, Nordicsemi::ValueEventArgs<Nordicsemi::BtDevice^>^ arguments) 
         {
             /* Avoid call after a connect procedure is being started,
             * and the discovery procedure hasn't yet been stopped. */
@@ -916,7 +904,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Check if a device has the advertising data we are looking for.
         /// </summary>
-        bool IsEligibleForConnection(Nordicsemi::BtDevice^ device) //YYY
+        bool IsEligibleForConnection(Nordicsemi::BtDevice^ device) 
         {
             IDictionary<Nordicsemi::DeviceInfoType, String^>^ deviceInfo = device->DeviceInfo;
 
@@ -953,7 +941,7 @@ using System::Text::Encoding;
         }
 
         /*
-        bool IsEligibleForConnection_nRFTD1(BtDevice device) //YYY
+        bool IsEligibleForConnection_nRFTD1(BtDevice device) 
         {
         IDictionary<Nordicsemi::DeviceInfoType, String^> deviceInfo = device.DeviceInfo;
 
@@ -984,7 +972,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Extract the device name from the advertising data.
         /// </summary>
-        String^ GetDeviceName(IDictionary<Nordicsemi::DeviceInfoType, String^>^ deviceInfo) //YYY
+        String^ GetDeviceName(IDictionary<Nordicsemi::DeviceInfoType, String^>^ deviceInfo) 
         {
             String^ deviceName = String::Empty;
             bool hasNameField = deviceInfo->ContainsKey(Nordicsemi::DeviceInfoType::CompleteLocalName);
@@ -1111,7 +1099,7 @@ using System::Text::Encoding;
                     ex->StackTrace);
             }
         }
-        void OnConnected(Object^ sender, EventArgs^ arguments) //NNN
+        void OnConnected(Object^ sender, EventArgs^ arguments)
         {
             //if (Connected != nullptr)
             {
@@ -1163,7 +1151,7 @@ using System::Text::Encoding;
         /// A connection update must be responded to in two steps: sending a connection update
         /// response, and performing the actual update.
         /// </summary>
-        void OnConnectionUpdateRequest_Task(/*Object^ sender, Nordicsemi::ConnectionUpdateRequestEventArgs^ arguments*/ Object^ o) //NNN
+        void OnConnectionUpdateRequest_Task(/*Object^ sender, Nordicsemi::ConnectionUpdateRequestEventArgs^ arguments*/ Object^ o)
         {
 
             Nordicsemi::ConnectionUpdateRequestEventArgs^ arguments = static_cast<Nordicsemi::ConnectionUpdateRequestEventArgs^>(o);
@@ -1175,7 +1163,7 @@ using System::Text::Encoding;
             updateParams->SlaveLatency = arguments->SlaveLatency;
             masterEmulator->UpdateConnectionParameters(updateParams);
         }
-        void OnConnectionUpdateRequest(Object^ sender, Nordicsemi::ConnectionUpdateRequestEventArgs^ arguments) //NNN
+        void OnConnectionUpdateRequest(Object^ sender, Nordicsemi::ConnectionUpdateRequestEventArgs^ arguments)
         {
 #if 1
             AddToLog("OnConnectionUpdateRequest: Start Thread");
@@ -1203,7 +1191,7 @@ using System::Text::Encoding;
         /// <summary>
         /// This event handler is called when a connection has been terminated.
         /// </summary>
-        void OnDisconnected(Object^ sender, Nordicsemi::ValueEventArgs<Nordicsemi::DisconnectReason>^ arguments) //NNN
+        void OnDisconnected(Object^ sender, Nordicsemi::ValueEventArgs<Nordicsemi::DisconnectReason>^ arguments)
         {
             connectionInProgress = false;
             UARTsendData = false;
@@ -1213,7 +1201,7 @@ using System::Text::Encoding;
         /// <summary>
         /// Relay received log message events to the log method.
         /// </summary>
-        void OnLogMessage(Object^ sender, Nordicsemi::ValueEventArgs<String^>^ arguments) //YYY
+        void OnLogMessage(Object^ sender, Nordicsemi::ValueEventArgs<String^>^ arguments) 
         {
             String^ message = arguments->Value;
 
@@ -1246,6 +1234,6 @@ using System::Text::Encoding;
 
     };
 
-} //namespace nRFUart_TD
+} //namespace TDnRF
 
 

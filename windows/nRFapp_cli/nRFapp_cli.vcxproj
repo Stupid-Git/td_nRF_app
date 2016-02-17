@@ -83,11 +83,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C_L6.h" />
     <ClInclude Include="MainWindow.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="nRF_TD_Controller.h" />
     <ClInclude Include="PipeSetup.h" />
+    <ClInclude Include="Protocol_T2.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UpDnEngine.h" />
@@ -97,10 +99,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="C_L6.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="nRFapp_cli.cpp" />
     <ClCompile Include="nRF_TD_Controller.cpp" />
     <ClCompile Include="PipeSetup.cpp" />
+    <ClCompile Include="Protocol_T2.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

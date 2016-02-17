@@ -6,22 +6,117 @@ using System.Threading.Tasks;
 
 using Nordicsemi;
 
-namespace nRFUart_TD
+namespace TDnRF
 {
-    public class UpDnEngine
+
+    public class PipeSetup_UpDn
     {
-        public    Nordicsemi.MasterEmulator masterEmulator;
-        PipeSetup pipeSetup;
-
-
-        public void UpDnEngine_Setup(Nordicsemi.MasterEmulator master, PipeSetup pipe)
+        MasterEmulator masterEmulator;
+        public PipeSetup_UpDn(MasterEmulator master)
         {
             masterEmulator = master;
-            pipeSetup = pipe;
         }
-        
+
+
+        //===== Dn =====
+        //----------------------------------------
+        public int DcmdPipe { get; private set; }
+        public int DdatPipe { get; private set; }
+        public int DcfmPipe { get; private set; }
+
+        //===== Up =====
+        //----------------------------------------
+        public int UcmdPipe { get; private set; }
+        public int UdatPipe { get; private set; }
+        public int UcfmPipe { get; private set; }
+
+
+        public void PerformPipeSetup()
+        {
+            // GAP service 
+            BtUuid TDudOverBtleUuid = new BtUuid("6e400001b5a3f393e0a9e50e24dcca42");
+            masterEmulator.SetupAddService(TDudOverBtleUuid, PipeStore.Remote);
+
+            //===== Dn =====
+            // DCMD characteristic (Down Link Command 0x0002) 
+            BtUuid DcmdUuid = new BtUuid("6e400002b5a3f393e0a9e50e24dcca42");
+            int DcmdMaxLength = 20;
+            byte[] DcmdData = null;
+            masterEmulator.SetupAddCharacteristicDefinition(DcmdUuid, DcmdMaxLength, DcmdData);
+            // Using pipe type Transmit to enable write operations 
+            DcmdPipe = masterEmulator.SetupAssignPipe(PipeType.Transmit);
+
+            // DDAT characteristic (Down Link Data 0x0003) 
+            BtUuid DdatUuid = new BtUuid("6e400003b5a3f393e0a9e50e24dcca42");
+            int DdatMaxLength = 20;
+            byte[] DdatData = null;
+            masterEmulator.SetupAddCharacteristicDefinition(DdatUuid, DdatMaxLength, DdatData);
+            // Using pipe type Receive to enable notify operations 
+            DdatPipe = masterEmulator.SetupAssignPipe(PipeType.Transmit);
+
+            // DCFM characteristic (Down Link Confirm 0x0004)
+            BtUuid DcfmUuid = new BtUuid("6e400004b5a3f393e0a9e50e24dcca42");
+            int DcfmMaxLength = 20;
+            byte[] DcfmData = null;
+            masterEmulator.SetupAddCharacteristicDefinition(DcfmUuid, DcfmMaxLength, DcfmData);
+            // Using pipe type Receive to enable notify operations 
+            DcfmPipe = masterEmulator.SetupAssignPipe(PipeType.Receive);
+
+            //===== Up =====
+            // UCMD characteristic (Up Link Command 0x0005) 
+            BtUuid UcmdUuid = new BtUuid("6e400005b5a3f393e0a9e50e24dcca42");
+            int UcmdMaxLength = 20;
+            byte[] UcmdData = null;
+            masterEmulator.SetupAddCharacteristicDefinition(UcmdUuid, UcmdMaxLength, UcmdData);
+            // Using pipe type Transmit to enable write operations 
+            UcmdPipe = masterEmulator.SetupAssignPipe(PipeType.Receive);
+
+            // DDAT characteristic (Up Link Data 0x0006) 
+            BtUuid UdatUuid = new BtUuid("6e400006b5a3f393e0a9e50e24dcca42");
+            int UdatMaxLength = 20;
+            byte[] UdatData = null;
+            masterEmulator.SetupAddCharacteristicDefinition(UdatUuid, UdatMaxLength, UdatData);
+            // Using pipe type Receive to enable notify operations 
+            UdatPipe = masterEmulator.SetupAssignPipe(PipeType.Receive);
+
+            // UCFM characteristic (Up Link Confirm 0x0007)
+            BtUuid UcfmUuid = new BtUuid("6e400007b5a3f393e0a9e50e24dcca42");
+            int UcfmMaxLength = 20;
+            byte[] UcfmData = null;
+            masterEmulator.SetupAddCharacteristicDefinition(UcfmUuid, UcfmMaxLength, UcfmData);
+            // Using pipe type Receive to enable notify operations 
+            UcfmPipe = masterEmulator.SetupAssignPipe(PipeType.Transmit);
+        }
+
+    }
+
+
+    public class UpDnEngine
+    {
+        public Nordicsemi.MasterEmulator masterEmulator;
+        //PPP PipeSetup pipeSetup;
+        PipeSetup_UpDn pipeSetup;
+
+        public void UpDnEngine_Setup(Nordicsemi.MasterEmulator master)//PPP , PipeSetup pipe)
+        {
+            masterEmulator = master;
+            //PPP pipeSetup = pipe;
+            pipeSetup = new PipeSetup_UpDn(master);
+        }
+
+        public void PerformPipeSetup()
+        {
+            this.pipeSetup.PerformPipeSetup();
+        }
+
+
         public UpDnEngine()
         {
+        }
+
+        public void EnableNotify_Dcfm()
+        {
+            masterEmulator.GetCharacteristicProperties(pipeSetup.DcfmPipe);
         }
 
         //=====================================================================
@@ -34,45 +129,23 @@ namespace nRFUart_TD
             return(0);
         }
 
-        Int32 Dn_Send_CMD_12()
+
+        public Int32 Dn_Send_CMD_11_Pkt(byte[] pktbuf)//array<System::Byte,1> pktbuf)
         {
-            byte[] buf = new byte[20]; // array<Byte,1> buf = new array<Byte,1>(20);
-            Int32 r;
-            //--- Make the command ---
-            buf[0] = 1;
-            buf[1] = 2;
-            r = Dn_Send_Dcmd(buf, 20);
-            return(r);
-        }
-
-        Int32 Dn_Send_CMD_13()
-        {
-            byte[] buf = new byte[20]; // array<Byte,1> buf = new array<Byte,1>(20);
-            Int32 r;
-            //--- Make the command ---
-            buf[0] = 1;
-            buf[1] = 3;
-            r = Dn_Send_Dcmd(buf, 20);
-            return(r);
-        }
-
-
-        Int32 Dn_Send_CMD_11_Pkt(byte [] pktbuf)//array<System::Byte,1> pktbuf)
-        {            
-            int  i;    
+            int i;
             byte[] buf = new byte[20]; // array<Byte,1> buf = new array<Byte,1>(20);
             //Byte length;
-            Byte  blk_no;    
+            Byte blk_no;
             UInt16 ofst;
-            
-            Int16 totalLength;
-            Int16 total_cs;
+
+            UInt16 totalLength;
+            UInt16 total_cs;
             Byte total_cs0;
             Byte total_cs1;
 
             Int32 r;
 
-            totalLength = (Int16)(pktbuf.Length + 2);
+            totalLength = (UInt16)(pktbuf.Length + 2);
             total_cs = 0;
             for (i = 0; i < pktbuf.Length; i++)
             {
@@ -80,7 +153,7 @@ namespace nRFUart_TD
             }
             total_cs0 = (Byte)((total_cs >> 0) & 0x00FF);
             total_cs1 = (Byte)((total_cs >> 8) & 0x00FF);
-            
+
             //--- Make the command ---
             buf[0] = 1;
             buf[1] = 1;
@@ -96,14 +169,14 @@ namespace nRFUart_TD
             {
                 //--- Set the Data ---
                 ofst = (UInt16)(blk_no * 16);
-                if( ofst > pktbuf.Length)
+                if (ofst > pktbuf.Length)
                     break;
 
                 buf[0] = blk_no++;
                 buf[1] = 0x00;
                 buf[2] = 0x00;
                 buf[3] = 0x00;
-                for(i=0; i<16; i++)
+                for (i = 0; i < 16; i++)
                 {
                     if ((ofst + i) < pktbuf.Length)
                         buf[4 + i] = pktbuf[ofst + i];
@@ -125,260 +198,23 @@ namespace nRFUart_TD
                 */
                 //length = 20;
                 r = Dn_Send_Ddat(buf, 20);
-                if(r != 0)
+                if (r != 0)
                     break;
 
-            } while(true);
+            } while (true);
 
-            return(0);
+            return (0);
         }
-#if true //TODO
-        //---------------------------------------------------------------------
-        Int32 Dn_Send_T2_DummyTEST1()
-        {
-            int  i;    
-            byte[] buf = new byte[20]; // array<Byte,1> buf = new array<Byte,1>(20);
-
-            Int16 dataSize = 10;
-
-            // fake make packet
-            byte[] pktbuf = new byte[dataSize + 6]; // array<System::Byte,1> pktbuf = new array<Byte,1>(dataSize + 6);
-            Int16 cs_pkt;
-
-            pktbuf[0] = (Byte)'T';
-            pktbuf[1] = (Byte)'2';
-            pktbuf[2] = (Byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[3] = (Byte)((dataSize >> 8) & 0x00FF); //Len MSB
-
-            pktbuf[4] = (Byte)'a';
-            pktbuf[5] = (Byte)'b';
-            pktbuf[6] = (Byte)'c';
-            pktbuf[7] = (Byte)'d';
-            pktbuf[8] = (Byte)'e';
-            pktbuf[9] = (Byte)'A';
-            pktbuf[10] = (Byte)'B';
-            pktbuf[11] = (Byte)'C';
-            pktbuf[12] = (Byte)'D';
-            pktbuf[13] = (Byte)'E';
-
-            cs_pkt = 0;
-            for( i=4; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-
-        //---------------------------------------------------------------------
-        public Int32 Dn_Send_0x01_CMD_01_0x58()
-        {
-            int  i;    
-            byte[] buf = new byte[20]; // array<Byte,1> buf = new array<Byte,1>(20);
-
-            Byte cmd = 0x58; //CMD_GETSERIAL; CMD_01_0x58
-            Byte subcmd = 0;
-            Int16 dataSize = 0;
-
-            // fake make packet
-            byte[] pktbuf = new byte[7]; //array<System::Byte,1> pktbuf = new array<Byte,1>(7);
-            Int16 cs_pkt;
-
-            pktbuf[0] = 0x01;
-            pktbuf[1] = cmd;
-            pktbuf[2] = subcmd;
-            pktbuf[3] = (byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[4] = (byte)((dataSize >> 8) & 0x00FF); //Len MSB
-
-            cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-
-        //---------------------------------------------------------------------
-        public Int32 Dn_Send_0x01_CMD_01_0xF5(UInt16 recCount)
-        {
-            int  i;    
-            Byte cmd = 0xF5; //CMD_01_0xF5;
-            Byte subcmd = 0;
-            Int16 dataSize = 2;
-            Int16 cs_pkt;
-
-            byte[] pktbuf = new byte[dataSize + 7]; //array<System::Byte,1> pktbuf = new array<Byte,1>(dataSize + 7);
-
-            pktbuf[0] = 0x01;
-            pktbuf[1] = cmd;
-            pktbuf[2] = subcmd;
-            pktbuf[3] = (byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[4] = (byte)((dataSize >> 8) & 0x00FF); //Len MSB
-            pktbuf[5] = (byte)((recCount >> 0) & 0x00FF); //Len LSB
-            pktbuf[6] = (byte)((recCount >> 8) & 0x00FF); //Len MSB
-
-            cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-        
-        //---------------------------------------------------------------------
-        public Int32 Dn_Send_0x01_CMD_01_0xF8()
-        {
-            int  i;    
-            Byte cmd = 0xF8; //CMD_01_0xF8;
-            Byte subcmd = 0;
-            Int16 dataSize = 0;
-            Int16 cs_pkt;
-
-            byte[] pktbuf = new byte[dataSize + 7]; //array<System::Byte,1> pktbuf = new array<Byte,1>(dataSize + 7);
-
-            pktbuf[0] = 0x01;
-            pktbuf[1] = cmd;
-            pktbuf[2] = subcmd;
-            pktbuf[3] = (byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[4] = (byte)((dataSize >> 8) & 0x00FF); //Len MSB
-
-            cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-
-        //---------------------------------------------------------------------
-        public Int32 Dn_Send_0x01_CMD_01_0xF9(Int32 size)
-        {
-            int  i;    
-            Byte cmd = 0xF9; //CMD_01_0xF9
-            Byte subcmd = 0;
-            Int16 dataSize = 2;
-            Int16 cs_pkt;
-
-            byte[] pktbuf = new byte[dataSize + 7]; // array<System::Byte,1> pktbuf = new array<Byte,1>(dataSize + 7);
-
-            pktbuf[0] = 0x01;
-            pktbuf[1] = cmd;
-            pktbuf[2] = subcmd;
-            pktbuf[3] = (byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[4] = (byte)((dataSize >> 8) & 0x00FF); //Len MSB
-
-            pktbuf[5] = (byte)((size >> 0) &0x00ff);;
-            pktbuf[6] = (byte)((size >> 8) &0x00ff);
-
-            cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-
-        //---------------------------------------------------------------------
-        public Int32 Dn_Send_0x01_CMD_01_0x44(UInt16 byteCount)
-        {
-            int  i;    
-            Byte cmd = 0x44; //CMD_01_0x44;
-            Byte subcmd = 0;
-            Int16 dataSize = 2;
-            Int16 cs_pkt;
-
-            byte[] pktbuf = new byte[dataSize + 7]; //array<System::Byte,1> pktbuf = new array<Byte,1>(dataSize + 7);
-
-            pktbuf[0] = 0x01;
-            pktbuf[1] = cmd;
-            pktbuf[2] = subcmd;
-            pktbuf[3] = (byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[4] = (byte)((dataSize >> 8) & 0x00FF); //Len MSB
-
-            pktbuf[5] = (byte)((byteCount >> 0) & 0x00ff);
-            pktbuf[6] = (byte)((byteCount >> 8) & 0x00ff);
-
-            cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-
-        //---------------------------------------------------------------------
-        public Int32 Dn_Send_0x01_CMD_01_0x45(UInt16 blockNum)
-        {
-            int  i;    
-            Byte cmd = 0x45; //CMD_01_0x45;
-            Byte subcmd = 0x06;
-            Int16 dataSize = 2;
-            Int16 cs_pkt;
-
-            byte[] pktbuf = new byte[dataSize + 7]; //array<System::Byte,1> pktbuf = new array<Byte,1>(dataSize + 7);
-
-            pktbuf[0] = 0x01;
-            pktbuf[1] = cmd;
-            pktbuf[2] = subcmd;
-            pktbuf[3] = (byte)((dataSize >> 0) & 0x00FF); //Len LSB
-            pktbuf[4] = (byte)((dataSize >> 8) & 0x00FF); //Len MSB
-
-            pktbuf[5] = (byte)((blockNum >> 0) & 0x00ff);
-            pktbuf[6] = (byte)((blockNum >> 8) & 0x00ff);
-
-            cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
-            {
-                cs_pkt += pktbuf[i];
-            }
-            pktbuf[pktbuf.Length - 2] = (byte)((cs_pkt >> 0) & 0x00FF);
-            pktbuf[pktbuf.Length - 1] = (byte)((cs_pkt >> 8) & 0x00FF);
-
-
-            Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
-        }
-
-
         //---------------------------------------------------------------------
         Int32 Dn_Dummy_Send42()
-        {            
-            int  i;
+        {
+            int i;
             byte[] buf = new byte[20]; //array<Byte,1> buf = new array<Byte,1>(20);
             // fake make packet
             byte[] pktbuf = new byte[42]; //array<System::Byte,1> pktbuf = new array<Byte,1>(42);
-            Int16 cs_pkt;
+            UInt16 cs_pkt;
             cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
+            for (i = 0; i < pktbuf.Length - 2; i++)
             {
                 pktbuf[i] = (Byte)(i & 0x00FF);
                 cs_pkt += pktbuf[i];
@@ -388,25 +224,25 @@ namespace nRFUart_TD
 
 
             Dn_Send_CMD_11_Pkt(pktbuf);
-            return(0);
+            return (0);
         }
 
 
         //---------------------------------------------------------------------
         Int32 Dn_Dummy_Send43()
-        {            
-            int  i;    
-            byte [] buf = new byte [20]; //array<Byte,1> buf = new array<Byte,1>(20);
+        {
+            int i;
+            byte[] buf = new byte[20]; //array<Byte,1> buf = new array<Byte,1>(20);
             //Byte length;
-            Byte  blk_no;    
-            Int16 ofst;
+            Byte blk_no;
+            UInt16 ofst;
 
             Int32 r;
             // fake make packet
             byte[] pktbuf = new byte[42]; //array<System::Byte,1> pktbuf = new array<Byte,1>(42);
-            Int16 cs_pkt;
+            UInt16 cs_pkt;
             cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
+            for (i = 0; i < pktbuf.Length - 2; i++)
             {
                 pktbuf[i] = (Byte)(i & 0x00FF);
                 cs_pkt += pktbuf[i];
@@ -428,48 +264,47 @@ namespace nRFUart_TD
             do
             {
                 //--- Set the Data ---
-                ofst = (Int16)(blk_no * 16);
-                if( ofst > pktbuf.Length)
+                ofst = (UInt16)(blk_no * 16);
+                if (ofst > pktbuf.Length)
                     break;
 
                 buf[0] = blk_no++;
                 buf[1] = 0x00;
                 buf[2] = 0x00;
                 buf[3] = 0x00;
-                for(i=0; i<16; i++)
-                    if(ofst +i < pktbuf.Length)
+                for (i = 0; i < 16; i++)
+                    if (ofst + i < pktbuf.Length)
                         buf[4 + i] = pktbuf[ofst + i];
                     else
                         buf[4 + i] = 0x00;
 
                 //length = 20;
-                if(blk_no!=2)
+                if (blk_no != 2)
                 {
                     r = Dn_Send_Ddat(buf, 20);
-                    if(r != 0)
+                    if (r != 0)
                         break;
                 }
 
-            } while(true);
+            } while (true);
 
-            return(0);
+            return (0);
         }
-#endif
         //---------------------------------------------------------------------
         Int32 Dn_Dummy_Send43B()
-        {            
-            int  i;    
-            byte [] buf = new byte [20];
+        {
+            int i;
+            byte[] buf = new byte[20];
             //Byte length;
-            Byte  blk_no;    
-            Int16 ofst;
+            Byte blk_no;
+            UInt16 ofst;
 
             Int32 r;
             // fake make packet
-            byte [] pktbuf = new byte [42]; //         array<System::Byte,1> pktbuf = new array<Byte,1>(42);
-            Int16 cs_pkt;
+            byte[] pktbuf = new byte[42]; //         array<System::Byte,1> pktbuf = new array<Byte,1>(42);
+            UInt16 cs_pkt;
             cs_pkt = 0;
-            for( i=0; i<pktbuf.Length - 2 ; i++)
+            for (i = 0; i < pktbuf.Length - 2; i++)
             {
                 pktbuf[i] = (Byte)(i & 0x00FF);
                 cs_pkt += pktbuf[i];
@@ -483,86 +318,34 @@ namespace nRFUart_TD
             do
             {
                 //--- Set the Data ---
-                ofst = (Int16)(blk_no * 16);
-                if( ofst > pktbuf.Length)
+                ofst = (UInt16)(blk_no * 16);
+                if (ofst > pktbuf.Length)
                     break;
 
                 buf[0] = blk_no++;
                 buf[1] = 0x00;
                 buf[2] = 0x00;
                 buf[3] = 0x00;
-                for(i=0; i<16; i++)
-                    if(ofst +i < pktbuf.Length)
+                for (i = 0; i < 16; i++)
+                    if (ofst + i < pktbuf.Length)
                         buf[4 + i] = pktbuf[ofst + i];
                     else
                         buf[4 + i] = 0x00;
 
                 //length = 20;
-                if(blk_no == 2)
+                if (blk_no == 2)
                 {
                     r = Dn_Send_Ddat(buf, 20);
-                    if(r != 0)
+                    if (r != 0)
                         break;
                 }
 
-            } while(true);
+            } while (true);
 
-            return(0);
+            return (0);
         }
 
 
-        //---------------------------------------------------------------------
-        //---------------------------------------------------------------------
-        //---------------------------------------------------------------------
-        //---------------------------------------------------------------------
-        //---------------------------------------------------------------------
-#if false //TODO
-        Int32 UpDn_Write_Wctrl_test(array<System::Byte,1> p_buf, int len)
-        {
-            bool bret;
-            Int32 r;
-            r = 0;
-
-            Console.WriteLine("UpDn_Write_Wctrl_test...");
-            bret = masterEmulator.SendData(pipeSetup.WctrlPipe, p_buf);
-            if(bret == true)
-            {
-                Console.WriteLine("UpDn_Write_Wctrl_test: TRUE");
-            }
-            if(bret == false)
-            {
-                Console.WriteLine("UpDn_Write_Wctrl_test: FALSE");
-            }
-
-            return(r);
-        }
-
-        Int32 UpDn_Read_Rctrl_test()//(array<System::Byte,1> p_buf, int len)
-        {
-            Int32 i;
-            Int32 r;
-            r = 0;
-            array<System::Byte,1> r_buf;
-
-
-            Console.WriteLine("UpDn_Read_Rctrl_test...");
-            r_buf = masterEmulator.RequestData(pipeSetup.RctrlPipe);
-            if(r_buf == nullptr)
-            {
-                Console.WriteLine("UpDn_Read_Rctrl_test: r_buf == nullptr");
-            }
-
-            Console.WriteLine("r_buf.Length = {0}", r_buf.Length);
-            if( r_buf.Length > 0)
-            {
-                for(i=0 ; i<r_buf.Length; i++)
-                    Console.Write(" {0:X2}", r_buf[i]);
-                Console.WriteLine("");
-
-            }
-            return(r);
-        }
-#endif
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
@@ -622,20 +405,20 @@ namespace nRFUart_TD
         */
         byte [] /*array<Byte,1>*/ m_blkDn_buf;
         byte [] /*array<Byte,1>*/ m_blkDn_chk;
-        Int16 m_blkDn_len;
-        Int16 m_blkDn_blkCnt;
-        Int16 m_blkDn_rxBlkCnt;
+        UInt16 m_blkDn_len;
+        UInt16 m_blkDn_blkCnt;
+        UInt16 m_blkDn_rxBlkCnt;
 
         //static Byte  m_Dcfm_buf[20];
-        //static Int16 m_Dcfm_len;
+        //static UInt16 m_Dcfm_len;
         byte [] /*array<Byte,1>*/ m_Dcfm_buf;
-        Int16 m_Dcfm_len;
+        UInt16 m_Dcfm_len;
 
         //-----------------------------------------------------------------------------
         Int32 blk_dn_start( byte [] pkt)// array<Byte,1> pkt )
         {
             Byte  j;
-            Int16 i;
+            UInt16 i;
 
             //----- BOGUS INIT -----
             BLK_DN_COUNT = 128;
@@ -648,11 +431,11 @@ namespace nRFUart_TD
             m_blkDn_rxBlkCnt = 0;
             m_blkDn_blkCnt = 0;    
 
-            m_blkDn_len = (Int16)(pkt[2] | (pkt[3]<<8));
+            m_blkDn_len = (UInt16)(pkt[2] | (pkt[3]<<8));
             if( m_blkDn_len == 0)
                 return(1);
 
-            m_blkDn_blkCnt = (Int16)(((m_blkDn_len - 1) / 16) + 1);
+            m_blkDn_blkCnt = (UInt16)(((m_blkDn_len - 1) / 16) + 1);
 
 
             for(i=0 ; i < m_blkDn_blkCnt; i++)
@@ -668,11 +451,11 @@ namespace nRFUart_TD
         }
 
 
-        Int32 blk_dn_add( byte [] pkt, int len )//  array<Byte,1> pkt, Int16 len )
+        Int32 blk_dn_add( byte [] pkt, UInt16 len )//  array<Byte,1> pkt, UInt16 len )
         {
             Byte  position;
             Byte  j;
-            //    Int16 i;
+            //    UInt16 i;
 
             if(len != 20)
                 return(1);
@@ -696,10 +479,10 @@ Int32 DN_CHK_CHKSUM_NG = 3;
         Int32 blk_dn_chk()
         {
             //    Byte  j;
-            Int16 i;
-            Int16 missing_blk_cnt;
-            Int16 cs_pkt;
-            Int16 cs_now;
+            UInt16 i;
+            UInt16 missing_blk_cnt;
+            UInt16 cs_pkt;
+            UInt16 cs_now;
 
             if(m_blkDn_blkCnt == 0)
                 return(1);
@@ -716,7 +499,7 @@ Int32 DN_CHK_CHKSUM_NG = 3;
             if(missing_blk_cnt>0)
                 return(2);
 
-            cs_pkt = (Int16)(m_blkDn_buf[m_blkDn_len - 2] | (m_blkDn_buf[m_blkDn_len - 1]<<8));
+            cs_pkt = (UInt16)(m_blkDn_buf[m_blkDn_len - 2] | (m_blkDn_buf[m_blkDn_len - 1]<<8));
             cs_now = 0;
             for(i=0 ; i < m_blkDn_len - 2; i++)
             {
@@ -770,83 +553,6 @@ Int32 DN_CHK_CHKSUM_NG = 3;
             return(missing_blk_cnt);
         }
 
-        void blk_dn_checkT2()
-        {
-            if( (m_blkDn_buf[0] == 'T') && (m_blkDn_buf[1] == '2') )
-            {
-
-                Console.WriteLine("blk_dn_checkT2");
-                
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.Write("Got T2 Response\n");
-                Console.WriteLine();
-                Console.WriteLine();
-            }
-
-        }
-        void blk_dn_check0x01()
-        {
-
-            if( m_blkDn_buf[0] == 0x01 )
-            {
-                Console.WriteLine("\nblk_dn_check0x01");
-
-                if(m_blkDn_buf[1] == 0x44)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.Write("Command 0x44: Status  = {0:x2}\n", m_blkDn_buf[2] );
-                    Console.Write("              Len     = {0}\n"   , (m_blkDn_buf[4]<<8) + (m_blkDn_buf[3]) );
-                    Console.Write("              data[0] = {0:x2}\n", m_blkDn_buf[5]);
-                    Console.Write("              data[1] = {0:x2}\n", m_blkDn_buf[6]);
-                    Console.WriteLine();
-                    Console.WriteLine();
-                }
-                if(m_blkDn_buf[1] == 0x45)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.Write("Command 0x45: Status  = {0:x2}\n", m_blkDn_buf[2] );
-                    Console.Write("              Len     = {0}\n"   , (m_blkDn_buf[4]<<8) + (m_blkDn_buf[3]) );
-                    Console.Write("              data[0] = {0:x2}\n", m_blkDn_buf[5]);
-                    Console.Write("              data[1] = {0:x2}\n", m_blkDn_buf[6]);
-                    Console.WriteLine();
-                    Console.WriteLine();
-                }
-
-
-                if(m_blkDn_buf[1] == 0x58)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.Write("Serial Number = ");
-                    Console.Write("{0:x2}", m_blkDn_buf[8] );
-                    Console.Write("{0:x2}", m_blkDn_buf[7] );
-                    Console.Write("{0:x2}", m_blkDn_buf[6] );
-                    Console.Write("{0:x2}", m_blkDn_buf[5] );
-                    Console.WriteLine();
-                    Console.WriteLine();
-                }
-                if(m_blkDn_buf[1] == 0xF8)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.Write("Command 0xF8 Response\n");
-                    Console.WriteLine();
-                    Console.WriteLine();
-                }
-                if(m_blkDn_buf[1] == 0xF9)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.Write("Command 0xF9 Response\n");
-                    Console.WriteLine();
-                    Console.WriteLine();
-                }
-            }
-
-        }
 
         bool app_uart_put(char c)
         {
@@ -938,7 +644,7 @@ Int32 DN_CHK_CHKSUM_NG = 3;
             m_Dcfm_buf[2] = (byte)n;
             //blk_dn_get_missing( &m_Dcfm_buf[3], n );
             blk_dn_get_missing(m_Dcfm_buf, (byte)3, (byte)n);
-            m_Dcfm_len = (Int16)(3 + n);
+            m_Dcfm_len = (UInt16)(3 + n);
 
             Un_Send_Ucfm(m_Dcfm_buf, m_Dcfm_len);
             return(0);
@@ -988,13 +694,30 @@ Int32 DN_CHK_CHKSUM_NG = 3;
             return(r);
 
         }
+
+        //DUMMY
+        public delegate Int32 L6_OnDataRxCallback_DEL(byte[] theUpPacket);
+
+        static Int32 L6_OnDataRxCallback_DUMMY(byte[] theUpPacket)
+        {
+            return (42);
+        }
+
+        L6_OnDataRxCallback_DEL rxCallback = L6_OnDataRxCallback_DUMMY;
+
+        public void set_OnRXcallbackdelegate(L6_OnDataRxCallback_DEL f)
+        {
+            rxCallback = f;
+        }
+
+
         public Int32 On_Udat(byte[] buf, int len) // array<System::Byte,1> buf, int len )
         {
             Int32 r;
 
             ///stop_Dn_timer();
             ///m_BlkDn_packetWaitTimeCount = 0;
-            r = blk_dn_add( buf, len);
+            r = blk_dn_add( buf, (UInt16)len);
 
             r = blk_dn_chk();
             if(r == DN_CHK_OK)
@@ -1004,8 +727,13 @@ Int32 DN_CHK_CHKSUM_NG = 3;
                 start_send_Dcfm_OK();
 
                 Console.Write("\nDN_CHK_OK: m_blkDn_len = {0}\n", m_blkDn_len);
-                blk_dn_check0x01();
-                blk_dn_checkT2();
+
+
+                byte[] theUpPacket = new byte[m_blkDn_len];
+                Buffer.BlockCopy(m_blkDn_buf, 0, theUpPacket, 0, m_blkDn_len);
+                rxCallback(theUpPacket);
+                //L6_OnDataRxCallback_DUMMY(theUpPacket); // blk_dn_check0x01(); blk_dn_checkT2();
+            
             }
             else
                 if(r == DN_CHK_CHKSUM_NG)
@@ -1033,6 +761,35 @@ Int32 DN_CHK_CHKSUM_NG = 3;
             masterEmulator.SendData(pipeSetup.UcfmPipe, p_buf);
             return(r);
         }
+
+
+
+        public Int32 OnAnyPipe(Object sender, Nordicsemi.PipeDataEventArgs arguments)
+        {
+            //===== udEngine =====
+            if (arguments.PipeNumber == pipeSetup.DcfmPipe)
+                OnDataReceived_Dn(sender, arguments);
+
+            if (arguments.PipeNumber == pipeSetup.UcmdPipe)
+                OnDataReceived_Up(sender, arguments);
+            if (arguments.PipeNumber == pipeSetup.UdatPipe)
+                OnDataReceived_Up(sender, arguments);
+            return (42);
+        }
+
+        
+        void OnDataReceived_Dn(Object sender, Nordicsemi.PipeDataEventArgs arguments)
+        {
+            On_Dcfm(arguments.PipeData, arguments.PipeData.Length);
+        }
+        void OnDataReceived_Up(Object sender, Nordicsemi.PipeDataEventArgs arguments)
+        {
+            if (arguments.PipeNumber == pipeSetup.UcmdPipe)
+                On_Ucmd(arguments.PipeData, arguments.PipeData.Length);
+            if (arguments.PipeNumber == pipeSetup.UdatPipe)
+                On_Udat(arguments.PipeData, arguments.PipeData.Length);
+        }
+        
 
 
     }

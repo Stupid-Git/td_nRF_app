@@ -8,7 +8,7 @@
 //#using namespace Nordicsemi;
 
 
-namespace nRFUart_TD
+namespace TDnRF
 {    
     public ref class PipeSetup
     {
@@ -201,8 +201,8 @@ namespace nRFUart_TD
         void PerformPipeSetup()
         {
             // GAP service 
-            Nordicsemi::BtUuid^ uartOverBtleUuid = gcnew Nordicsemi::BtUuid("6e400001b5a3f393e0a9e50e24dcca42");
-            masterEmulator->SetupAddService(uartOverBtleUuid, Nordicsemi::PipeStore::Remote);
+            Nordicsemi::BtUuid^ TDudOverBtleUuid = gcnew Nordicsemi::BtUuid("6e400001b5a3f393e0a9e50e24dcca42");
+            masterEmulator->SetupAddService(TDudOverBtleUuid, Nordicsemi::PipeStore::Remote);
 
             //===== Dn =====
             // DCMD characteristic (Down Link Command 0x0002) 

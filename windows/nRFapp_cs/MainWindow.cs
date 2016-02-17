@@ -18,16 +18,22 @@ using System.Collections;
 //using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using nRFUart_TD;
+using TDnRF;
 
-
+#if false //maikon
 using Maikon_ns;//using MasterEm_TD2_a;
 using Maikon_lib;
+#endif
+using rtr500ble_Command_test;
 
 namespace nRFUart_TDForms
 {
     public partial class MainWindow : Form
     {
+        //Form1 sunabaForm1;
+        AppWindow_1 sunabaForm1;
+
+        C_L6 L6;
         public nRF_TD_Controller controller;
         bool isControllerInitialized = false;
         bool isControllerConnected = false;
@@ -53,22 +59,32 @@ namespace nRFUart_TDForms
         public MainWindow()
         {
             InitializeComponent();
-            InitializeNrfUartController();
+            Initialize_nRF_TD_Controller();
+
+            L6 = new C_L6();
 
             /* Retrieve persisted setting. */
-            cbDebug.Checked/*.IsChecked*/ = Properties.Settings.Default.IsDebugEnabled;
+            cbDebug.Checked = Properties.Settings.Default.my_IsDebugEnabled;
+            String my_GattControllerName = Properties.Settings.Default.my_GattControllerName;
+            String my_LastComPortName_nRF_DK = Properties.Settings.Default.my_LastComPortName_nRF_DK;
+            String my_LastComPortName_RTR500BLE = Properties.Settings.Default.my_LastComPortName_RTR500BLE;
             //TBR DataContext = this;
         }
 
         /*TODO
         protected override void OnInitialized(EventArgs e)
         {
-            base.OnInitialized(e);
+            //base.OnInitialized(e);
 
-            btnConnect.IsEnabled = false;
-            Mouse.OverrideCursor = Cursors.Wait;
+            //btnConnect.Enabled = false;
+            //Mouse.OverrideCursor = Cursors.Wait;
         }
         TODO*/
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+            btnConnect.Enabled = false;
+            //Mouse.OverrideCursor = Cursors.Wait;
+        }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
@@ -87,7 +103,7 @@ namespace nRFUart_TDForms
             base.OnClosing(e);
         }
 
-        void InitializeNrfUartController()
+        void Initialize_nRF_TD_Controller()
         {
             controller = new nRF_TD_Controller();
 
@@ -120,7 +136,7 @@ namespace nRFUart_TDForms
         {
             /* Requesting GUI update to be done in main thread since this 
              * method will be called from a different thread. */
-            Console.WriteLine("##TODO## Button Text = {0}", text);
+            
             /*TODO
             Dispatcher.BeginInvoke((Action)delegate()
             {
@@ -137,17 +153,17 @@ namespace nRFUart_TDForms
 
         void SetStartSendIsEnabled(bool isEnabled)
         {
-            SetButtonIsEnabled(btnStartSend100K, isEnabled);
+            //SetButtonIsEnabled(btnStartSend100K, isEnabled);
         }
 
         void SetStartSendFileIsEnabled(bool isEnabled)
         {
-            SetButtonIsEnabled(btnStartSendFile, isEnabled);
+            //SetButtonIsEnabled(btnStartSendFile, isEnabled);
         }
 
         void SetStopDataIsEnabled(bool isEnabled)
         {
-            SetButtonIsEnabled(btnStopData, isEnabled);
+            //SetButtonIsEnabled(btnStopData, isEnabled);
         }
 
         /*REF
@@ -276,8 +292,6 @@ namespace nRFUart_TDForms
         {
             isControllerInitialized = true;
 
-
-            Console.WriteLine("##TODO## btnConnect.IsEnabled = true");
             /*TODO
             Dispatcher.BeginInvoke((Action)delegate()
             {
@@ -293,6 +307,8 @@ namespace nRFUart_TDForms
                 /*TODO
                 Mouse.OverrideCursor = null;
                 TODO*/
+
+                L6.L6_Setup(controller.udEngine);
             }
             AddToOutput("Ready to connect");
         }
@@ -394,17 +410,20 @@ namespace nRFUart_TDForms
             }
         }
 
-        private void btnNotifyON_Click(object sender, EventArgs e)
+        private void OLD_btnNotifyON_Click(object sender, EventArgs e)
         {
-            controller.EnableNotify_Dcfm();
-        }
-
-        private void btnNotifyOFF_Click(object sender, EventArgs e)
-        {
-
+            //controller.EnableNotify_Dcfm();
+            controller.udEngine.EnableNotify_Dcfm();
+            //L6.EnableNotify_Dcfm();
         }
 
 
+        private void cbDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            /* Store the state of the checkbox in application settings. */
+            Properties.Settings.Default.my_IsDebugEnabled = (bool)cbDebug.Checked;
+            controller.DebugMessagesEnabled = (bool)cbDebug.Checked;
+        }
 
 
         //=====================================================================
@@ -412,21 +431,11 @@ namespace nRFUart_TDForms
         //===== UART ==========================================================
         //=====================================================================
         //=====================================================================
-        private void btnSend_Click(object sender, EventArgs e)
-        {
-            /* defunct
-            if (!isControllerConnected)
-            {
-                return;
-            }
-            controller.UART_SendData(tbInput.Text);
-            */
-        }
 
         /// <summary>
         /// Adds ability to initiate send by hitting enter key when textbox has focus.
         /// </summary>
-        void OnTbInputKeyDown(object sender, KeyEventArgs e)
+        void XXXOnTbInputKeyDown(object sender, KeyEventArgs e)
         {
             /*TODO
             if (e.Key != Key.Enter)
@@ -443,26 +452,20 @@ namespace nRFUart_TDForms
             TODO*/
         }
 
-        private void cbDebug_CheckedChanged(object sender, EventArgs e)
-        {
-            /* Store the state of the checkbox in application settings. */
-            Properties.Settings.Default.IsDebugEnabled = (bool)cbDebug.Checked;
-            controller.DebugMessagesEnabled = (bool)cbDebug.Checked;
-        }
 
 
-        void OnMenuItemLogfileClick(object sender, EventArgs e)
+        void XXXOnMenuItemLogfileClick(object sender, EventArgs e)
         {
             string logfilePath = controller.GetLogfilePath();
             Process.Start(logfilePath);
         }
 
-        void OnMenuItemExitClick(object sender, EventArgs e)
+        void XXXOnMenuItemExitClick(object sender, EventArgs e)
         {
             Close();
         }
 
-        void OnMenuItemAboutClick(object sender, EventArgs e)
+        void XXXOnMenuItemAboutClick(object sender, EventArgs e)
         {
             /*TODO
             About aboutDialog = new About();
@@ -471,31 +474,7 @@ namespace nRFUart_TDForms
             TODO*/
         }
 
-        private void btnStartSendFile_Click(object sender, EventArgs e)
-        {
-            /*TODO
-            string sendFilePath = String.Empty;
-
-            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
-            ofd.FileName = "File";
-            ofd.DefaultExt = "*.*";
-            ofd.Filter = "All files (*.*)|*.*";
-            ofd.FilterIndex = 0;
-            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
-
-            ofd.Title = "Please select a file to send";
-
-            bool? ofdResult = ofd.ShowDialog();
-
-            if (ofdResult == false) //Failure
-            {
-                return;
-            }
-
-            SendFile(ofd.FileName);
-            TODO*/
-        }
-        void SendFile(string filePath)
+        void XXXSendFile(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -509,16 +488,8 @@ namespace nRFUart_TDForms
             //controller.UARTStartSendData(fileContent);
         }
 
-        private void btnStartSend100K_Click(object sender, EventArgs e)
-        {
-            Send100K();
-        }
-        private void btnStartSend1K_Click(object sender, EventArgs e)
-        {
-            Send1K();
-        }
 
-        void Send100K()
+        void XXXSend100K()
         {
             /* Instantiate byte array with 18 bytes of data. */
             byte[] data = new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A,
@@ -532,7 +503,7 @@ namespace nRFUart_TDForms
             //controller.StartSendData(data, numberOfRepetitions);
         }
 
-        void Send1K()
+        void XXXSend1K()
         {
             /* Instantiate byte array with 18 bytes of data. */
             byte[] data = new byte[] { 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A,
@@ -547,7 +518,7 @@ namespace nRFUart_TDForms
         }
 
         //void OnBtnStopData(object sender, EventArgs e)
-        private void btnStopData_Click(object sender, EventArgs e)
+        private void XXXbtnStopData_Click(object sender, EventArgs e)
         {
             AddToOutput("Stop transfer");
             controller.UARTStopSendData();
@@ -557,22 +528,28 @@ namespace nRFUart_TDForms
         #endregion
 
 
-        
-#if false
 
         //=====================================================================
         //=====================================================================
         //===== CMD ===========================================================
         //=====================================================================
         //=====================================================================
-        System::Void btn_CMD13_Click(System::Object^  sender, System::EventArgs^  e)
+        public void btn_CMD12_Click(object sender, EventArgs e)
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.Dn_Send_CMD_13();
+            L6.Dn_Send_CMD_12(); // controller.udEngine.Dn_Send_CMD_12();
+        }
+
+        public void btn_CMD13_Click(object sender, EventArgs e)
+        {
+            if (!isControllerConnected)
+                return;
+            L6.Dn_Send_CMD_13(); // controller.udEngine.Dn_Send_CMD_13();
         }
 
 
+#if false
         //=====================================================================
         //=====================================================================
         //===== CMD testing ===================================================
@@ -582,45 +559,44 @@ namespace nRFUart_TDForms
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.Dn_Send_T2_DummyTEST1();
-            //controller.udEngine.Dn_Send_CMD_12();
+            L6.Dn_Send_T2_DummyTEST1(); // controller.udEngine.Dn_Send_T2_DummyTEST1();
+            //L6.Dn_Send_CMD_12(); // controller.udEngine.Dn_Send_CMD_12();
         }
 
         System::Void btnSendXX4_Click(System::Object^  sender, System::EventArgs^  e)
         {
-            if (!isControllerConnected)
-                return;
-            //controller.udEngine.Dn_Dummy_Send42();
-            //controller.Send_Dcmd(tbInput.Text);
         }
 
         System::Void btnSendXX5_Click(System::Object^  sender, System::EventArgs^  e)
         {
-            if (!isControllerConnected)
-                return;
-            //controller.Send_Ddat(tbInput.Text);
         }
 
         System::Void btnSendXX6_Click(System::Object^  sender, System::EventArgs^  e)
         {
             if (!isControllerConnected)
                 return;
-            //controller.udEngine.Dn_Dummy_Send43();
+            //L6.Dn_Dummy_Send43(); // controller.udEngine.Dn_Dummy_Send43();
         }
 
-
+#endif
         //=====================================================================
         //=====================================================================
         //===== CMD T2 ========================================================
         //=====================================================================
         //=====================================================================
-        System::Void btnT2_Test_Click(System::Object^  sender, System::EventArgs^  e)
+        private void btnT2_RUINF_Click(object sender, EventArgs e)
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.Dn_Send_T2_DummyTEST1();
+
+            L6.T2_RUINF();
+            
+            //L6.Dn_Send_T2_DummyTEST1();
         }
-#endif
+
+
+
+
         //=====================================================================
         //=====================================================================
         //===== CMD 0x01 ======================================================
@@ -630,7 +606,7 @@ namespace nRFUart_TDForms
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.Dn_Send_0x01_CMD_01_0x58();
+            L6.Dn_Send_0x01_CMD_01_0x58(); // controller.udEngine.Dn_Send_0x01_CMD_01_0x58();
         }
 
         private void btn01_F5_Click(object sender, EventArgs e)
@@ -639,7 +615,7 @@ namespace nRFUart_TDForms
                 return;
             UInt16 recCount;  
             recCount = Convert.ToUInt16( tbBlockNum.Text, 10);
-            controller.udEngine.Dn_Send_0x01_CMD_01_0xF5(recCount);
+            L6.Dn_Send_0x01_CMD_01_0xF5(recCount); // controller.udEngine.Dn_Send_0x01_CMD_01_0xF5(recCount);
 
         }
 
@@ -648,14 +624,14 @@ namespace nRFUart_TDForms
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.Dn_Send_0x01_CMD_01_0xF8();
+            L6.Dn_Send_0x01_CMD_01_0xF8(); // controller.udEngine.Dn_Send_0x01_CMD_01_0xF8();
         }
 
         private void btn01_F9_Click(object sender, EventArgs e)
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.Dn_Send_0x01_CMD_01_0xF9(1024);
+            L6.Dn_Send_0x01_CMD_01_0xF9(1024); // controller.udEngine.Dn_Send_0x01_CMD_01_0xF9(1024);
         }
 
         private void btn01_44_Click(object sender, EventArgs e)
@@ -668,7 +644,7 @@ namespace nRFUart_TDForms
             recCount = Convert.ToUInt16( tbBlockNum.Text, 10);
             UInt16 byteCount;  
             byteCount = (UInt16)(recCount * 8);
-            controller.udEngine.Dn_Send_0x01_CMD_01_0x44(byteCount);//2048 + 32);
+            L6.Dn_Send_0x01_CMD_01_0x44(byteCount); // controller.udEngine.Dn_Send_0x01_CMD_01_0x44(byteCount);//2048 + 32);
         }
         private void btn01_45_Click(object sender, EventArgs e)
         {
@@ -677,7 +653,7 @@ namespace nRFUart_TDForms
 
             UInt16 blkNum;  
             blkNum = Convert.ToUInt16( tbBlockNum.Text, 10);
-            controller.udEngine.Dn_Send_0x01_CMD_01_0x45(blkNum);
+            L6.Dn_Send_0x01_CMD_01_0x45(blkNum); // controller.udEngine.Dn_Send_0x01_CMD_01_0x45(blkNum);
 
         }
 
@@ -709,13 +685,111 @@ namespace nRFUart_TDForms
             }
 
         }
+        private void btnSunaba_Click(object sender, EventArgs e)
+        {
+            if (sunabaForm1 == null)
+            {
+                sunabaForm1 = new AppWindow_1();
+            }
+
+            if (sunabaForm1.IsDisposed == true)
+            {
+                sunabaForm1 = new AppWindow_1();
+            }
+
+            if (sunabaForm1.Visible == false)
+            {
+                sunabaForm1.Show();
+            }
+            else
+            {
+                sunabaForm1.Hide();
+            }
+
+            /*
+            if (sunabaForm1 == null)
+            {
+                sunabaForm1 = new Form1();
+            }
+
+            if (sunabaForm1.IsDisposed == true)
+            {
+                sunabaForm1 = new Form1();
+            }
+
+            if (sunabaForm1.Visible == false)
+            {
+                sunabaForm1.Show();
+            }
+            else
+            {
+                sunabaForm1.Hide();
+            }
+
+            //if (sunabaForm1.maikon.serial_IsOpen() != true)
+            //{
+            //    sunabaForm1.maikon.serial_Open();
+            //}
+            */
+        }
+
+        private void btnSerLow_Create_Click(object sender, EventArgs e)
+        {
+            L6.serLow_Create();
+        }
+
+        private void btnSerLow_Open_Click(object sender, EventArgs e)
+        {
+            L6.serLow_Open();
+        }
+
+        private void btnSerLow_Close_Click(object sender, EventArgs e)
+        {
+            L6.serLow_Close();
+        }
+
+        private void btnTEST_BUTTON_Click(object sender, EventArgs e)
+        {
+
+            nRF_Common.ComPortUtil cpu = new nRF_Common.ComPortUtil();
+
+            int comPortCount = cpu.enumeratePorts();
+
+            int n_nRF;
+            String[] nRF_ports;
+            n_nRF = cpu.nRF_PortCount();
+            nRF_ports = cpu.nRF_PortNames();
+            foreach (String s in nRF_ports)
+            {
+                Console.WriteLine("nrfPort  ({0})", s);
+            }
+
+            int n_MCB;
+            String[] MCB_ports;
+            n_MCB = cpu.MCB_PortCount();
+            MCB_ports = cpu.MCB_PortNames();
+            foreach (String s in MCB_ports)
+            {
+                Console.WriteLine("MCB_port ({0})", s);
+            }
+
+
+            toolStripComboBox1.Items.Clear();
+            if (n_nRF > 0) toolStripComboBox1.Items.Add("nRF Board           - " + nRF_ports[0]);
+            if (n_nRF > 0) toolStripComboBox1.Items.Add("Real BLE            - " + nRF_ports[0]);
+            if (n_MCB > 0) toolStripComboBox1.Items.Add("Real Serial         - " + MCB_ports[0]);
+            if (n_MCB > 0) toolStripComboBox1.Items.Add("Real BLE and Serial - " + MCB_ports[0]);
+
+        }
+
+
 
 #if false
         System::Void btnReadTest_Click(System::Object^  sender, System::EventArgs^  e)
         {
             if (!isControllerConnected)
                 return;
-            controller.udEngine.UpDn_Read_Rctrl_test();
+            L6.UpDn_Read_Rctrl_test(); // controller.udEngine.UpDn_Read_Rctrl_test();
         }
         System::Void btnWriteTest_Click(System::Object^  sender, System::EventArgs^  e)
         {
@@ -724,7 +798,7 @@ namespace nRFUart_TDForms
 
             array<uint8_t,1>^ buf = gcnew array<uint8_t,1>(20);
 
-            controller.udEngine.UpDn_Write_Wctrl_test(buf, buf.Length);
+            L6.UpDn_Write_Wctrl_test(buf, buf.Length); // controller.udEngine.UpDn_Write_Wctrl_test(buf, buf.Length);
         }
 #endif
 

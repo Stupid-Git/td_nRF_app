@@ -26,12 +26,48 @@ namespace nRFUart_TDForms.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IsDebugEnabled {
+        public bool my_IsDebugEnabled {
             get {
-                return ((bool)(this["IsDebugEnabled"]));
+                return ((bool)(this["my_IsDebugEnabled"]));
             }
             set {
-                this["IsDebugEnabled"] = value;
+                this["my_IsDebugEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string my_GattControllerName {
+            get {
+                return ((string)(this["my_GattControllerName"]));
+            }
+            set {
+                this["my_GattControllerName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string my_LastComPortName_RTR500BLE {
+            get {
+                return ((string)(this["my_LastComPortName_RTR500BLE"]));
+            }
+            set {
+                this["my_LastComPortName_RTR500BLE"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string my_LastComPortName_nRF_DK {
+            get {
+                return ((string)(this["my_LastComPortName_nRF_DK"]));
+            }
+            set {
+                this["my_LastComPortName_nRF_DK"] = value;
             }
         }
     }

@@ -2,7 +2,7 @@
 #include "PipeSetup.h"
 
 
-namespace nRFUart_TD
+namespace TDnRF
 {    
     /*
     PipeSetup::PipeSetup(void)
