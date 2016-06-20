@@ -1377,7 +1377,11 @@ namespace TDnRFLib //TDnRFcontroller_LIB
             }
 
             BtScanParameters scanParameters = new BtScanParameters();
+
+            scanParameters.ScanIntervalMs = 250.0; //2016-06-20
+            scanParameters.ScanWindowMs = 225.0;   //2016-06-20
             scanParameters.ScanType = BtScanType.ActiveScanning;
+
             bool startSuccess = masterEmulator.StartDeviceDiscovery(scanParameters);
 
             if (startSuccess)
@@ -1502,11 +1506,25 @@ namespace TDnRFLib //TDnRFcontroller_LIB
 
             BtDevice device = arguments.Value;
 
-            if (!IsEligibleForConnection(device))
+            //2016-06-20 if (!IsEligibleForConnection(device))
+            //2016-06-20{
+            //2016-06-20    return;
+            //2016-06-20}
+            //2016-06-20
+            Console.WriteLine("==================== RAW =========================");
+            foreach (var keyval in arguments.Value.DeviceInfo)
             {
-                return;
+                DeviceInfoType dit = keyval.Key;
+                String val = keyval.Value;
+                String taipu = dit.ToString();
+                //Console.Write("key = {0}, ", taipu); Console.Write("Value = {0}", taipu, val);
+                //Console.WriteLine("key = {0}, Value = {1}", taipu, val);
+                Console.WriteLine("key = {0}, Value = {1}", dit.ToString(), val);
             }
+            Console.WriteLine("--------------------------------------------------");
+            //2016-06-20
 
+            
             //STATE_connectionInProgress = true;
 
             bool devInList = false;
@@ -1533,7 +1551,17 @@ namespace TDnRFLib //TDnRFcontroller_LIB
             }
             catch //(Exception ex)
             {
-                sDevInfo_CompleteLocalName = "...";
+                //2016-06-20 sDevInfo_CompleteLocalName = "...";
+                //2016-06-20 
+                try
+                {
+                    sDevInfo_CompleteLocalName = device.DeviceInfo[DeviceInfoType.ShortenedLocalName];
+                }
+                catch //(Exception ex)
+                {
+                    sDevInfo_CompleteLocalName = "No Name!";
+                }
+                //2016-06-20 
             }
             if (!devInList)
             {
