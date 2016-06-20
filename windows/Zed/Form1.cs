@@ -17,7 +17,29 @@ namespace Zed
         public Form1()
         {
             InitializeComponent();
+
+            textBox1.Text = "0xFFFFFFFF";
+            textBox2.Text = "0x01234567";
+            checkBox1.Checked = true;
+            checkBox2.Checked = false;
+            m_torokuCode = (UInt32)Convert.ToInt32(textBox1.Text, 16);
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox1.Checked == false) return;
+            m_torokuCode = (UInt32)Convert.ToInt32(textBox1.Text, 16);
+            Console.WriteLine("m_torokuCode changed to {0:x8}", m_torokuCode);
+            checkBox2.Checked = false;
+        }
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == false) return;
+            m_torokuCode = (UInt32)Convert.ToInt32(textBox2.Text, 16);
+            Console.WriteLine("m_torokuCode changed to {0:x8}", m_torokuCode);
+            checkBox1.Checked = false;
+        }
+
 
 
         //**++**--**++**--**++**--**++**--**++**--**++**--**++**--**++**--**++*
@@ -207,10 +229,10 @@ namespace Zed
                 TO--;
                 if (TO <= 0)
                 {
-                    Console.WriteLine("Timed out");
-                    Console.WriteLine("Timed out");
+                    Console.WriteLine("");
                     Console.WriteLine("Timed out");
                     sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
                     return;
                 }
             };
@@ -337,7 +359,315 @@ namespace Zed
             */
         }
 
+        //UInt32 m_torokuCode = 0x01234567; //01 9F 06 07 00 01 9F 15 00 00 FF FF 60 03 C3 03         ...
+        //UInt32 m_torokuCode = 0x12345678;
+        UInt32 m_torokuCode = 0xFFFFFFFF;
+        private void btTest_2_Click(object sender, EventArgs e)
+        {
+            int TO;
+            Byte[] t2Packet = null;
+            Byte[] txPacket = null;
+            Byte[] rxPacket = new Byte[0];
+
+            richTextBox1.AppendText("Start\r\n");
 
 
+            ///////////////////////////////
+            ///////////////////////////////
+            /*
+            sunable_Init();
+            sunable.rtrBle_Open();
+            txPacket = protocol_T2.RUINF_get_send_packet();
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+            };
+
+            protocol_T2.RUINF_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+            */
+            ///////////////////////////////
+            ///////////////////////////////
+
+            sunable_Init();
+            sunable.rtrBle_Open();
+
+            //t2Packet = protocol_01.CMD_58_get_send_packet();
+            t2Packet = protocol_T2.RUINF_get_send_packet();
+            txPacket = protocol_01.wrapWith9F(t2Packet, m_torokuCode);
+
+            protocol_01.CMD_print("String s", txPacket, (UInt16)txPacket.Length);
+            //return;
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            TO = 1000;
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(1);
+                TO--;
+                if (TO <= 0)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Timed out");
+                    sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
+                    return;
+                }
+            };
+
+            //rxPacket = new byte[] { 0x01, 0x58, 0x06, 0x04, 0x00,    0x00, 0x00, 0x00, 0x00,   0x63, 0x00};
+            //protocol_01.CMD_58_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            protocol_T2.RUINF_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+
+            richTextBox1.AppendText("End\r\n");
+
+
+        }
+
+        private void btTest_3_Click(object sender, EventArgs e)
+        {
+            int TO;
+            Byte[] txPacket = null;
+            Byte[] rxPacket = new Byte[0];
+
+            richTextBox1.AppendText("Start\r\n");
+
+            sunable_Init();
+
+            sunable.rtrBle_Open();
+
+            txPacket = protocol_01.CMD_9E_get_send_packet();
+
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            TO = 1000;
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(1);
+                TO--;
+                if (TO <= 0)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Timed out");
+                    sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
+                    return;
+                }
+            };
+
+            //rxPacket = new byte[] { 0x01, 0x58, 0x06, 0x04, 0x00,    0x00, 0x00, 0x00, 0x00,   0x63, 0x00};
+            protocol_01.CMD_9E_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+
+            richTextBox1.AppendText("End\r\n");
+
+        }
+
+        private void btTest_3A_Click(object sender, EventArgs e)
+        {
+            int TO;
+            Byte[] txPacket = null;
+            Byte[] rxPacket = new Byte[0];
+
+            richTextBox1.AppendText("Start\r\n");
+
+            sunable_Init();
+
+            sunable.rtrBle_Open();
+
+            txPacket = protocol_01.CMD_9E_01_get_send_packet();
+
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            TO = 1000;
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(1);
+                TO--;
+                if (TO <= 0)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Timed out");
+                    sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
+                    return;
+                }
+            };
+
+            //rxPacket = new byte[] { 0x01, 0x58, 0x06, 0x04, 0x00,    0x00, 0x00, 0x00, 0x00,   0x63, 0x00};
+            protocol_01.CMD_9E_01_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+
+            richTextBox1.AppendText("End\r\n");
+
+        }
+
+        private void direct_0x69_01()
+        {
+            int TO;
+            Byte[] txPacket = null;
+            Byte[] rxPacket = new Byte[0];
+
+            richTextBox1.AppendText("Start\r\n");
+
+            sunable_Init();
+
+            sunable.rtrBle_Open();
+
+            //txPacket = protocol_01.CMD_33_00_get_send_packet();
+            txPacket = protocol_01.CMD_69_01_get_send_packet();
+
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            TO = 1000;
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(1);
+                TO--;
+                if (TO <= 0)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Timed out");
+                    sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
+                    return;
+                }
+            };
+
+            //rxPacket = new byte[] { 0x01, 0x58, 0x06, 0x04, 0x00,    0x00, 0x00, 0x00, 0x00,   0x63, 0x00};
+            //protocol_01.CMD_33_00_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            protocol_01.CMD_69_01_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+
+            richTextBox1.AppendText("End\r\n");
+
+        }
+
+        void wrap_0xNN()
+        {
+            int TO;
+            Byte[] t2Packet = null;
+            Byte[] txPacket = null;
+            Byte[] rxPacket = new Byte[0];
+
+            richTextBox1.AppendText("Start\r\n");
+
+            sunable_Init();
+            sunable.rtrBle_Open();
+
+            //t2Packet = protocol_01.CMD_58_get_send_packet();
+            //OLD t2Packet = protocol_T2.RUINF_get_send_packet();
+            //t2Packet = protocol_01.CMD_33_00_get_send_packet();
+            t2Packet = protocol_01.CMD_69_01_get_send_packet();
+
+            txPacket = protocol_01.wrapWith9F(t2Packet, m_torokuCode);
+
+            protocol_01.CMD_print("String s", txPacket, (UInt16)txPacket.Length);
+            //return;
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            TO = 1000;
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(1);
+                TO--;
+                if (TO <= 0)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Timed out");
+                    sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
+                    return;
+                }
+            };
+
+            //rxPacket = new byte[] { 0x01, 0x58, 0x06, 0x04, 0x00,    0x00, 0x00, 0x00, 0x00,   0x63, 0x00};
+            //protocol_01.CMD_58_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            //OLD protocol_T2.RUINF_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            //protocol_01.CMD_33_00_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            protocol_01.CMD_69_01_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+
+            richTextBox1.AppendText("End\r\n");
+          
+        }
+
+        private void bt0xnn_Click(object sender, EventArgs e)
+        {
+            //direct_0x69_01();
+            wrap_0xNN();
+        }
+
+        private void btTestSegi48_Click(object sender, EventArgs e)
+        {
+
+            int TO;
+            Byte[] t2Packet = null;
+            Byte[] txPacket = null;
+            Byte[] rxPacket = new Byte[0];
+
+            richTextBox1.AppendText("Start\r\n");
+
+            sunable_Init();
+            sunable.rtrBle_Open();
+
+            //t2Packet = protocol_01.CMD_58_get_send_packet();
+            //OLD t2Packet = protocol_T2.RUINF_get_send_packet();
+            //t2Packet = protocol_01.CMD_33_00_get_send_packet();
+            t2Packet = protocol_01.CMD_48_00_get_send_packet();
+
+            txPacket = protocol_01.wrapWith9F(t2Packet, m_torokuCode);
+
+            protocol_01.CMD_print("String s", txPacket, (UInt16)txPacket.Length);
+            //return;
+            sunable.rtrBle_Write_Packet(txPacket);
+
+            TO = 1000;
+            sunable.rtrBle_Read_Packet(ref rxPacket);
+            while (false == sunable.rtrBle_Read_Packet(ref rxPacket))
+            {
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(1);
+                TO--;
+                if (TO <= 0)
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Timed out");
+                    sunable.rtrBle_Close();
+                    richTextBox1.AppendText("Timeout\r\n");
+                    return;
+                }
+            };
+
+            //rxPacket = new byte[] { 0x01, 0x58, 0x06, 0x04, 0x00,    0x00, 0x00, 0x00, 0x00,   0x63, 0x00};
+            //protocol_01.CMD_58_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            //OLD protocol_T2.RUINF_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            //protocol_01.CMD_33_00_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+            protocol_01.CMD_48_00_process_recv_packet(rxPacket, (UInt16)rxPacket.Length);
+
+            sunable.rtrBle_Close();
+
+            richTextBox1.AppendText("End\r\n");
+        }
     }
 }
